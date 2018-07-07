@@ -1,6 +1,6 @@
 # Compile-SourceScript
 
-Compiles the specified hlds & source script, and populates the relative plugins folder with the newly compiled plugin on user confirmation.
+Compiles the specified `hlds` or `srcds` script, and populates the relative plugins folder with the newly compiled plugin upon user confirmation.
 
 
 #### Instructions
