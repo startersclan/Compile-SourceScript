@@ -4,9 +4,9 @@ Compiles the specified `hlds` or `srcds` script, and populates the relative plug
 
 
 #### Instructions
-Adding a debug configuration in `User Settings` or `Workspace Settings` will allow you to quickly compile the `.sp` or `.sma` source file simply by *selecting* the debug configuration and pushing **F5**.
+Add a debug configuration in `User Settings` or `Workspace Settings` to quickly compile the `.sp` or `.sma` source file by **selecting** the debug configuration and pushing **F5**.
 
-A global debug configuration can be set up as follows:
+Example of a global debug configuration:
 
 ```json
 // In User Settings
