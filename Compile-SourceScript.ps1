@@ -50,7 +50,7 @@ function Compile-SourceScript {
             # Validate compiler binary
             $compilerItem = Get-Item -Path (Join-Path $scripting_dir $COMPILE_BIN_NAME)
 
-            Write-Host "Compiler: $($compilerItem.FullName)" -ForegroundColor Yellow
+            Write-Host "Compiler: $($compilerItem.FullName)"
 
             # Get all items in compiled folder before compilation by hash
             $compiled_items_pre = Get-ChildItem $compiled_dir -Recurse -Force | ? { $_.Extension -in $PLUGIN_EXTS } | Select-Object *, @{name='md5'; expression={(Get-FileHash $_.fullname -Algorithm MD5).hash}}
@@ -72,15 +72,17 @@ function Compile-SourceScript {
             # Copy items to plugins folder
             if ($compiled_items_diff) {
                 # List
-                Write-Host "`nNew/Updated plugins:" -ForegroundColor Green
-                $compiled_items_diff | Format-Table Name, LastWriteTime
-
+                Write-Host "`nCompiled plugins:" -ForegroundColor Green
+                $compiled_items_diff | % { Write-Host "    $($_.Name), $($_.LastWriteTime)" -ForegroundColor Green }
+                Write-Host ""
+ 
                 New-Item -Path $plugins_dir -ItemType Directory -Force | Out-Null
                 $compiled_items_diff | % {
                     if ($_.Basename -ne $script.Basename) {
                         Write-Host "`nThe scripts name does not match the compiled plugin's name." -ForegroundColor Magenta
                     }
                     Copy-Item -Path $_.FullName -Destination $plugins_dir -Recurse @copyParams
+                    Write-Host "Plugin copied to $($_.Fullname)" -ForegroundColor Green
                 }
             }else {
                 Write-Host `n"No new/updated plugins found. No operations were performed." -ForegroundColor Magenta
