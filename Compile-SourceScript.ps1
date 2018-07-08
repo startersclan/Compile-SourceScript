@@ -1,6 +1,9 @@
-﻿param(
+param(
     [Parameter(Mandatory=$False)]
     $File
+,
+    [Parameter(Mandatory=$False)]
+    [switch]$Force
 )
 
 function Compile-SourceScript {
@@ -9,77 +12,93 @@ function Compile-SourceScript {
         [Parameter(Mandatory=$False)]
         [ValidateScript({ Test-Path -Path $_ -PathType Leaf })]
         $File
+    ,
+        [Parameter(Mandatory=$False)]
+        [switch]$Force
     )
 
-    # Process script
-    $script = Get-Item -Path $File
-    $script_exts = '.sp', '.sma'
-    if ($script_exts -notcontains $script.Extension) {
-        throw "File is not a .sp or .sma source file."
-    }
-
-    try {
-        Write-Host "Running compile wrapper" -ForegroundColor Cyan
+    begin {
+        $ErrorActionPreference = 'Stop'
 
         # Define variables
-        $scripting_dir = $script.DirectoryName
-        $compile_bin_name = 'compile.exe'
-        $compile_core_items_names = 'compile.exe','spcomp.exe','compile.dat','amxxpc','amxxpc.exe','amxxpc_osx','amxxpc32.dll','compile.sh'
-        $compile_bin = Get-Item -Path (Join-Path $scripting_dir $compile_bin_name)
-        $compiled_dir_name = 'compiled'
-        $compiled_dir = Join-Path $scripting_dir $compiled_dir_name
-        $temp_scripting_dir_name = 'scripting.tempmove'
-        $temp_scripting_dir = Join-Path $scripting_dir $temp_scripting_dir_name
-        $plugins_dir_name = 'plugins'
-        $plugins_dir = Join-Path (Split-Path $scripting_dir -Parent) $plugins_dir_name
+        $SCRIPT_EXTS = '.sp', '.sma'
+        $PLUGIN_EXTS = '.amxx', '.smx'
+        $COMPILE_BIN_NAME = 'compile.exe'
+        $COMPILED_DIR_NAME = 'compiled'
+        $PLUGINS_DIR_NAME = 'plugins'
 
-        #Write-Host "Directory: $scripting_dir" -ForegroundColor Yellow
-        Write-Host "Compiler: $($compile_bin.FullName)" -ForegroundColor Yellow
-
-        # Get and move all items except script and compile core items to temp scripting folder
-        $items_excluded = Get-ChildItem -Path $scripting_dir -File | ? { $compile_core_items_names -notcontains $_.Name -And $script.Name -ne $_.Name }
-        if ($items_excluded) {
-            New-Item -Path $temp_scripting_dir -ItemType Directory -Force | Out-Null
-            Move-Item -Path $items_excluded.FullName -Destination $temp_scripting_dir
+        # Copy-Item Cmlet parameters
+        $copyParams = @{
+            Confirm = !$Force
         }
-
-        # Get all items in compiled folder before compilation by hash
-        $compiled_items_pre = Get-ChildItem $compiled_dir -Recurse -Force | select *, @{name='md5'; expression={(Get-FileHash $_.fullname -Algorithm MD5).hash}}
-
-        # Run the compiler
-        Write-Host "Compiling..." -ForegroundColor Cyan
-        Start-Process -Wait $compile_bin.FullName -WorkingDirectory $scripting_dir
-
-        # Move all other items back to scripting folder
-        $items_excluded = Get-ChildItem -Path $temp_scripting_dir -File
-        if ($items_excluded) {
-            Move-Item -Path $items_excluded.FullName -Destination $scripting_dir
-            Remove-Item -Path $temp_scripting_dir
-        }
-
-        # Get all items in compiled folder after compilation by hash
-        $compiled_items_post = Get-ChildItem $compiled_dir -Recurse -Force | select *, @{name='md5'; expression={(Get-FileHash $_.fullname -Algorithm MD5).hash}}
-
-        # Get items with differing hashes
-        $hashes_diff_obj = Compare-object -ReferenceObject $compiled_items_pre.md5 -DifferenceObject $compiled_items_post.md5 #| % { $compiled_items_post | ? { $_.md }
-        $compiled_items_diff = $compiled_items_post | ? { $hashes_diff_obj.inputobject -contains $_.md5 }
-
-        if ($compiled_items_diff) {
-            Write-Host "New/Updated plugins:" -ForegroundColor Green
-            #$compiled_items_diff | select *
-            $compiled_items_diff | Format-Table Name, LastWriteTime
-            # Copy items to plugins folder
-            New-Item -Path $plugins_dir -ItemType Directory -Force | Out-Null
-            $compiled_items_diff | % { Copy-Item -Path $_.FullName -Destination $plugins_dir -Recurse -Confirm }
-        }else {
-            Write-Host "No new/updated plugins found. No items were copied." -ForegroundColor Magenta
-        }
-    }catch {
-        throw "Runtime error. `nException: $($_.Exception.Message) `nStacktrace: $($_.ScriptStackTrace)"
-    }finally {
-        Write-Host "`nEnd of compile wrapper." -ForegroundColor Cyan
     }
+    process {
+        try {
+            # Process script
+            $script = Get-Item -Path $File
+            if ($script.Extension -notin $SCRIPT_EXTS) {
+                throw "File is not a .sp or .sma source file."
+            }
 
+            Write-Host "Running compile wrapper" -ForegroundColor Cyan
+
+            # Normalize paths
+            $scripting_dir = $script.DirectoryName
+            $compiled_dir = Join-Path $scripting_dir $COMPILED_DIR_NAME
+            $plugins_dir = Join-Path (Split-Path $scripting_dir -Parent) $PLUGINS_DIR_NAME
+
+            # Validate compiler binary
+            $compilerItem = Get-Item -Path (Join-Path $scripting_dir $COMPILE_BIN_NAME)
+
+            Write-Host "Compiler: $($compilerItem.FullName)" -ForegroundColor Yellow
+
+            # Get all items in compiled folder before compilation by hash
+            $compiled_items_pre = Get-ChildItem $compiled_dir -Recurse -Force | ? { $_.Extension -in $PLUGIN_EXTS } | Select-Object *, @{name='md5'; expression={(Get-FileHash $_.fullname -Algorithm MD5).hash}}
+
+            # Run the compiler
+            Write-Host "Compiling..." -ForegroundColor Cyan
+            $epoch = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
+            $stdInFile = New-Item -Path (Join-Path $scripting_dir ".$epoch") -ItemType File -Force
+            '1' | Out-File -Path $stdInFile.FullName -Force -Encoding utf8
+            Start-Process $compilerItem.FullName -ArgumentList $script.Name -WorkingDirectory $scripting_dir -RedirectStandardInput $stdInFile.FullName -Wait -NoNewWindow
+
+            # Get all items in compiled folder after compilation by hash
+            $compiled_items_post = Get-ChildItem $compiled_dir -Recurse -Force | ? { $_.Extension -in $PLUGIN_EXTS } | Select-Object *, @{name='md5'; expression={(Get-FileHash $_.FullName -Algorithm MD5).hash}}
+
+            # Get items with differing hashes
+            $hashes_diff_obj = Compare-object -ReferenceObject $compiled_items_pre -DifferenceObject $compiled_items_post -Property FullName, md5 | ? { $_.SideIndicator -eq '=>' }
+            $compiled_items_diff = $compiled_items_post | ? { $_.md5 -in $hashes_diff_obj.md5 }
+
+            # Copy items to plugins folder
+            if ($compiled_items_diff) {
+                # List
+                Write-Host "`nNew/Updated plugins:" -ForegroundColor Green
+                $compiled_items_diff | Format-Table Name, LastWriteTime
+
+                New-Item -Path $plugins_dir -ItemType Directory -Force | Out-Null
+                $compiled_items_diff | % {
+                    if ($_.Basename -ne $script.Basename) {
+                        Write-Host "`nThe scripts name does not match the compiled plugin's name." -ForegroundColor Magenta
+                    }
+                    Copy-Item -Path $_.FullName -Destination $plugins_dir -Recurse @copyParams
+                }
+            }else {
+                Write-Host `n"No new/updated plugins found. No operations were performed." -ForegroundColor Magenta
+            }
+        }catch {
+            throw "Runtime error. `nException: $($_.Exception.Message) `nStacktrace: $($_.ScriptStackTrace)"
+        }finally {
+            # Cleanup
+            if ($stdInFile) {
+                Remove-Item $stdInFile -Force
+            }
+            Write-Host "End of compile wrapper." -ForegroundColor Cyan
+        }
+    }
 }
 
-Compile-SourceScript -File $File
+$params = @{
+    File = $File
+    Force = $Force
+}
+Compile-SourceScript @params
