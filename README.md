@@ -22,7 +22,7 @@ Example of a global debug configuration:
                 "request": "launch",
                 "name": "Compile hlds/srcds script",
                 "script": "C:\\Path\\to\\script\\Compile-SourceScript.ps1",
-                "args": ["${file}"],
+                "args": ["${file}", "-Force"],
                 "cwd": "${file}"
             }
         ]
