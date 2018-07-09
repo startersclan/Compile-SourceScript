@@ -1,4 +1,4 @@
-param(
+﻿param(
     [Parameter(Mandatory=$False)]
     $File
 ,
@@ -53,7 +53,7 @@ function Compile-SourceScript {
             Write-Host "Compiler: $($compilerItem.FullName)"
 
             # Get all items in compiled folder before compilation by hash
-            $compiled_items_pre = Get-ChildItem $compiled_dir -Recurse -Force | ? { $_.Extension -in $PLUGIN_EXTS } | Select-Object *, @{name='md5'; expression={(Get-FileHash $_.fullname -Algorithm MD5).hash}}
+            $compiled_dir_items_pre = Get-ChildItem $compiled_dir -Recurse -Force | ? { $_.Extension -in $PLUGIN_EXTS } | Select-Object *, @{name='md5'; expression={(Get-FileHash $_.fullname -Algorithm MD5).hash}}
 
             # Run the compiler
             Write-Host "Compiling..." -ForegroundColor Cyan
@@ -63,21 +63,21 @@ function Compile-SourceScript {
             Start-Process $compilerItem.FullName -ArgumentList $script.Name -WorkingDirectory $scripting_dir -RedirectStandardInput $stdInFile.FullName -Wait -NoNewWindow
 
             # Get all items in compiled folder after compilation by hash
-            $compiled_items_post = Get-ChildItem $compiled_dir -Recurse -Force | ? { $_.Extension -in $PLUGIN_EXTS } | Select-Object *, @{name='md5'; expression={(Get-FileHash $_.FullName -Algorithm MD5).hash}}
+            $compiled_dir_items_post = Get-ChildItem $compiled_dir -Recurse -Force | ? { $_.Extension -in $PLUGIN_EXTS } | Select-Object *, @{name='md5'; expression={(Get-FileHash $_.FullName -Algorithm MD5).hash}}
 
             # Get items with differing hashes
-            $hashes_diff_obj = Compare-object -ReferenceObject $compiled_items_pre -DifferenceObject $compiled_items_post -Property FullName, md5 | ? { $_.SideIndicator -eq '=>' }
-            $compiled_items_diff = $compiled_items_post | ? { $_.md5 -in $hashes_diff_obj.md5 }
+            $hashes_diff_obj = Compare-object -ReferenceObject $compiled_dir_items_pre -DifferenceObject $compiled_dir_items_post -Property FullName, md5 | ? { $_.SideIndicator -eq '=>' }
+            $compiled_dir_items_diff = $compiled_dir_items_post | ? { $_.md5 -in $hashes_diff_obj.md5 }
 
             # Copy items to plugins folder
-            if ($compiled_items_diff) {
+            if ($compiled_dir_items_diff) {
                 # List
                 Write-Host "`nCompiled plugins:" -ForegroundColor Green
-                $compiled_items_diff | % { Write-Host "    $($_.Name), $($_.LastWriteTime)" -ForegroundColor Green }
+                $compiled_dir_items_diff | % { Write-Host "    $($_.Name), $($_.LastWriteTime)" -ForegroundColor Green }
                 Write-Host ""
- 
+
                 New-Item -Path $plugins_dir -ItemType Directory -Force | Out-Null
-                $compiled_items_diff | % {
+                $compiled_dir_items_diff | % {
                     if ($_.Basename -ne $script.Basename) {
                         Write-Host "`nThe scripts name does not match the compiled plugin's name." -ForegroundColor Magenta
                     }
