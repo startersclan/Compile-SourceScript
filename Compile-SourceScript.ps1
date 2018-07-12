@@ -59,7 +59,7 @@ function Compile-SourceScript {
             Write-Host "Compiling..." -ForegroundColor Cyan
             $epoch = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
             $stdInFile = New-Item -Path (Join-Path $scripting_dir ".$epoch") -ItemType File -Force
-            '1' | Out-File -Path $stdInFile.FullName -Force -Encoding utf8
+            '1' | Out-File -FilePath $stdInFile.FullName -Force -Encoding utf8
             Start-Process $compilerItem.FullName -ArgumentList $script.Name -WorkingDirectory $scripting_dir -RedirectStandardInput $stdInFile.FullName -Wait -NoNewWindow
 
             # Get all items in compiled folder after compilation by hash
@@ -74,12 +74,12 @@ function Compile-SourceScript {
                 # List
                 Write-Host "`nCompiled plugins:" -ForegroundColor Green
                 $compiled_dir_items_diff | % { Write-Host "    $($_.Name), $($_.LastWriteTime)" -ForegroundColor Green }
-                Write-Host ""
 
                 New-Item -Path $plugins_dir -ItemType Directory -Force | Out-Null
                 $compiled_dir_items_diff | % {
                     if ($_.Basename -ne $script.Basename) {
                         Write-Host "`nThe scripts name does not match the compiled plugin's name." -ForegroundColor Magenta
+                        return  # continue in %
                     }
                     Copy-Item -Path $_.FullName -Destination $plugins_dir -Recurse @copyParams
                     Write-Host "Plugin copied to $($_.Fullname)" -ForegroundColor Green
