@@ -30,4 +30,43 @@ Example of a global debug configuration:
 }
 ```
 
+
+Alternatively, you may use build Tasks (preferred)
+
+```json
+// In tasks.json
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compile-SourceScript",
+            "type": "process",
+            "command": "Powershell",
+            "args": [
+                "-File",
+                "D:/git/joe/compile-sourcescript/Compile-SourceScript.ps1",
+                "-File",
+                "${file}",
+                "-Force"
+            ],
+            // Anything setting below is just fancy
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true
+            }
+        }
+    ]
+}
+
+```
+
 For more information, see <a href="https://code.visualstudio.com/docs/editor/debugging#_global-launch-configuration" target="_blank" title="Debugging">here</a>.
