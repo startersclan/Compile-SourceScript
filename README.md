@@ -1,43 +1,36 @@
 # Compile-SourceScript
 
-Compiles the specified `hlds` or `srcds` script, and populates the relative plugins folder with the newly compiled plugin upon user confirmation.
+`Compile-SourceScript` is a wrapper for compiling *AMX Mod X* ([`.sma`](https://wiki.alliedmods.net/Compiling_Plugins_(AMX_Mod_X))) and *SourceMod* ([`.sp`](https://wiki.alliedmods.net/Compiling_SourceMod_Plugins)) plugin source files for *Valve's* **GoldSource / Source** games.
 
+The script works by getting the specified plugin's source file compiled, and upon successful compilation, populating the respective mod's `plugins` directory with the newly compiled plugin.
 
-#### Instructions
-Add a debug configuration in `User Settings` or `Workspace Settings` to quickly compile the `.sp` or `.sma` source file by **selecting** the debug configuration and pushing **F5**.
+## Requirements
 
-Example of a global debug configuration:
+- **Windows** with [Powershell 4.0 or later](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-windows-powershell?view=powershell-5.1), or ***nix** with [Powershell Core](https://github.com/powershell/powershell).
 
-```json
-// In User Settings
-{
-    "launch": {
-        "version": "0.2.0",
-        "configurations": [
-            {
-                //.. Some other configuration
-            },
-            {
-                "type": "PowerShell",
-                "request": "launch",
-                "name": "Compile hlds/srcds script",
-                "script": "C:\\Path\\to\\script\\Compile-SourceScript.ps1",
-                "args": ["${file}", "-Force"],
-                "cwd": "${file}"
-            }
-        ]
-    }
-}
+## Examples
+
+### via Command Line
+
+Compiles the amxmodx plugin source file `plugin1.sma` with user confirmation for game Counter-Strike 1.6.
+
+```powershell
+./Compile-SourceScript.ps1 -File ~/servers/czero/addons/amxmodx/scripting/plugin1.sma
 ```
 
+Compiles the sourcemod plugin source file `plugin2.sp` without user confirmation for the game Counter-Strike: Global Offensive.
 
-Alternatively, you may use build Tasks (preferred)
+```powershell
+./Compile-SourceScript.ps1 -File ~/servers/csgo/addons/sourcemod/scripting/plugin2.sp -Force
+```
+
+### via VSCode
+
+[Build Tasks](https://code.visualstudio.com/docs/editor/tasks#vscode) can be utilized to ease the development of plugins right from within the code editor.
 
 ```json
 // In tasks.json
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
         {
@@ -46,7 +39,7 @@ Alternatively, you may use build Tasks (preferred)
             "command": "Powershell",
             "args": [
                 "-File",
-                "D:/git/joe/compile-sourcescript/Compile-SourceScript.ps1",
+                "D:/git/Compile-SourceScript.ps1/Compile-SourceScript.ps1",
                 "-File",
                 "${file}",
                 "-Force"
@@ -66,7 +59,4 @@ Alternatively, you may use build Tasks (preferred)
         }
     ]
 }
-
 ```
-
-For more information, see <a href="https://code.visualstudio.com/docs/editor/debugging#_global-launch-configuration" target="_blank" title="Debugging">here</a>.
