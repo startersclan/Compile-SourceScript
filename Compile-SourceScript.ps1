@@ -52,7 +52,7 @@ function Compile-SourceScript {
             "Compiler: $($compilerItem.FullName)" | Write-Host
 
             # Get all items in compiled folder before compilation by hash
-            $compiledDirItemsPre = Get-ChildItem $compiledDir -Recurse -Force | ? { $_.Extension -in $PLUGIN_EXTS } | Select-Object *, @{name='md5'; expression={(Get-FileHash $_.Fullname -Algorithm MD5).hash}}
+            $compiledDirItemsPre = Get-ChildItem $compiledDir -Recurse -Force | ? { $_.Extension -in $PLUGIN_EXTS } | Select-Object *, @{name='md5'; expression={(Get-FileHash $_.Fullname -Algorithm MD5).Hash}}
 
             # Run the compiler
             "Compiling..." | Write-Host -ForegroundColor Cyan
@@ -62,7 +62,7 @@ function Compile-SourceScript {
             Start-Process $compilerItem.FullName -ArgumentList $script.Name -WorkingDirectory $scriptingDir -RedirectStandardInput $stdInFile.FullName -Wait -NoNewWindow
 
             # Get all items in compiled folder after compilation by hash
-            $compiledDirItemsPost = Get-ChildItem $compiledDir -Recurse -Force | ? { $_.Extension -in $PLUGIN_EXTS } | Select-Object *, @{name='md5'; expression={(Get-FileHash $_.FullName -Algorithm MD5).hash}}
+            $compiledDirItemsPost = Get-ChildItem $compiledDir -Recurse -Force | ? { $_.Extension -in $PLUGIN_EXTS } | Select-Object *, @{name='md5'; expression={(Get-FileHash $_.FullName -Algorithm MD5).Hash}}
 
             # Get items with differing hashes
             $compiledDirItemsDiff = if ($compiledDirItemsPost) {
