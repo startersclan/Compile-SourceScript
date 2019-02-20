@@ -53,7 +53,7 @@ function Compile-SourceScript {
             Write-Host "Compiler: $($compilerItem.FullName)"
 
             # Get all items in compiled folder before compilation by hash
-            $compiledDirItemsPre = Get-ChildItem $compiledDir -Recurse -Force | ? { $_.Extension -in $PLUGIN_EXTS } | Select-Object *, @{name='md5'; expression={(Get-FileHash $_.fullname -Algorithm MD5).hash}}
+            $compiledDirItemsPre = Get-ChildItem $compiledDir -Recurse -Force | ? { $_.Extension -in $PLUGIN_EXTS } | Select-Object *, @{name='md5'; expression={(Get-FileHash $_.Fullname -Algorithm MD5).hash}}
 
             # Run the compiler
             Write-Host "Compiling..." -ForegroundColor Cyan
