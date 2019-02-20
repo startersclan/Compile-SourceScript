@@ -78,7 +78,10 @@ function Compile-SourceScript {
             if ($compiledDirItemsDiff) {
                 # List
                 Write-Host "`nCompiled plugins:" -ForegroundColor Green
-                $compiledDirItemsDiff | % { Write-Host "    $($_.Name), $($_.LastWriteTime)" -ForegroundColor Green }
+                $compiledDirItemsDiff | % {
+                    $compiledPluginHash = (Get-FileHash $_.FullName -Algorithm MD5).Hash
+                    Write-Host "    $($_.Name), $($_.LastWriteTime), $compiledPluginHash" -ForegroundColor Green
+                }
 
                 New-Item -Path $pluginsDir -ItemType Directory -Force | Out-Null
                 $compiledDirItemsDiff | % {
@@ -86,8 +89,21 @@ function Compile-SourceScript {
                         Write-Host "`nThe scripts name does not match the compiled plugin's name." -ForegroundColor Magenta
                         return  # continue in %
                     }
+                    $existingPlugin = Get-Item "$pluginsDir/$($_.Name)" -ErrorAction SilentlyContinue
+                    if (!$existingPlugin) {
+                        Write-Host "`nPlugin does not currently exist in the plugins directory." -ForegroundColor Yellow
+                    }else {
+                        $compiledPluginHash = (Get-FileHash $_.FullName -Algorithm MD5).Hash
+                        $existingPluginHash = (Get-FileHash $existingPlugin -Algorithm MD5).Hash
+                        Write-Host "`nExisting plugin:    $($existingPlugin.Name), $($existingPlugin.LastWriteTime), $existingPluginHash" -ForegroundColor Yellow
+                        Write-Host "Compiled plugin:    $($_.Name), $($_.LastWriteTime), $compiledPluginHash" -ForegroundColor Green
+                    }
                     Copy-Item -Path $_.FullName -Destination $pluginsDir -Recurse @copyParams
-                    Write-Host "Plugin copied to $($_.Fullname)" -ForegroundColor Green
+                    if ($LASTEXITCODE) { Write-Host 'Plugin copy error.' -ForegroundColor Magenta; return }
+                    $updatedPlugin = Get-Item "$pluginsDir/$($_.Name)"
+                    $updatedPluginHash = (Get-FileHash $updatedPlugin -Algorithm MD5).Hash
+                    if ($updatedPluginHash -eq $compiledPluginHash) { Write-Host "Plugin successfully copied to $($_.Fullname)" -ForegroundColor Green }
+                    else { Write-Host "Plugin has not been copied." -ForegroundColor Magenta; return }
                 }
             }else {
                 Write-Host `n"No new/updated plugins found. No operations were performed." -ForegroundColor Magenta
