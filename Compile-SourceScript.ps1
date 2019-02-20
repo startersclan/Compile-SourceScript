@@ -23,7 +23,7 @@ function Compile-SourceScript {
         # Define variables
         $SCRIPT_EXTS = '.sp', '.sma'
         $PLUGIN_EXTS = '.amxx', '.smx'
-        $COMPILE_BIN_NAME = if ($IsWindows -Or $env:OS) { 'compile.exe' } else { 'compile.sh' }
+        $COMPILE_WRAPPER_NAME = if ($IsWindows -Or $env:OS) { 'compile.exe' } else { 'compile.sh' }
         $COMPILED_DIR_NAME = 'compiled'
         $PLUGINS_DIR_NAME = 'plugins'
 
@@ -48,8 +48,7 @@ function Compile-SourceScript {
             $pluginsDir = Join-Path (Split-Path $scriptingDir -Parent) $PLUGINS_DIR_NAME
 
             # Validate compiler binary
-            $compilerItem = Get-Item -Path (Join-Path $scriptingDir $COMPILE_BIN_NAME)
-
+            $compilerItem = Get-Item -Path (Join-Path $scriptingDir $COMPILE_WRAPPER_NAME)
             Write-Host "Compiler: $($compilerItem.FullName)"
 
             # Get all items in compiled folder before compilation by hash
