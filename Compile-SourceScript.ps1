@@ -40,7 +40,7 @@ function Compile-SourceScript {
                 throw "File is not a .sp or .sma source file."
             }
 
-            Write-Host "Running compile wrapper" -ForegroundColor Cyan
+            "Running compile wrapper" | Write-Host -ForegroundColor Cyan
 
             # Normalize paths
             $scriptingDir = $script.DirectoryName
@@ -49,13 +49,13 @@ function Compile-SourceScript {
 
             # Validate compiler binary
             $compilerItem = Get-Item -Path (Join-Path $scriptingDir $COMPILE_WRAPPER_NAME)
-            Write-Host "Compiler: $($compilerItem.FullName)"
+            "Compiler: $($compilerItem.FullName)" | Write-Host
 
             # Get all items in compiled folder before compilation by hash
             $compiledDirItemsPre = Get-ChildItem $compiledDir -Recurse -Force | ? { $_.Extension -in $PLUGIN_EXTS } | Select-Object *, @{name='md5'; expression={(Get-FileHash $_.Fullname -Algorithm MD5).hash}}
 
             # Run the compiler
-            Write-Host "Compiling..." -ForegroundColor Cyan
+            "Compiling..." | Write-Host -ForegroundColor Cyan
             $epoch = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
             $stdInFile = New-Item -Path (Join-Path $scriptingDir ".$epoch") -ItemType File -Force
             '1' | Out-File -FilePath $stdInFile.FullName -Force -Encoding utf8
@@ -77,36 +77,36 @@ function Compile-SourceScript {
             # Copy items to plugins folder
             if ($compiledDirItemsDiff) {
                 # List
-                Write-Host "`nCompiled plugins:" -ForegroundColor Green
+                "`nCompiled plugins:" | Write-Host -ForegroundColor Green
                 $compiledDirItemsDiff | % {
                     $compiledPluginHash = (Get-FileHash $_.FullName -Algorithm MD5).Hash
-                    Write-Host "    $($_.Name), $($_.LastWriteTime), $compiledPluginHash" -ForegroundColor Green
+                    "    $($_.Name), $($_.LastWriteTime), $compiledPluginHash" | Write-Host -ForegroundColor Green
                 }
 
                 New-Item -Path $pluginsDir -ItemType Directory -Force | Out-Null
                 $compiledDirItemsDiff | % {
                     if ($_.Basename -ne $script.Basename) {
-                        Write-Host "`nThe scripts name does not match the compiled plugin's name." -ForegroundColor Magenta
+                        "`nThe scripts name does not match the compiled plugin's name." | Write-Host -ForegroundColor Magenta
                         return  # continue in %
                     }
                     $existingPlugin = Get-Item "$pluginsDir/$($_.Name)" -ErrorAction SilentlyContinue
                     if (!$existingPlugin) {
-                        Write-Host "`nPlugin does not currently exist in the plugins directory." -ForegroundColor Yellow
+                        "`nPlugin does not currently exist in the plugins directory." | Write-Host -ForegroundColor Yellow
                     }else {
                         $compiledPluginHash = (Get-FileHash $_.FullName -Algorithm MD5).Hash
                         $existingPluginHash = (Get-FileHash $existingPlugin -Algorithm MD5).Hash
-                        Write-Host "`nExisting plugin:    $($existingPlugin.Name), $($existingPlugin.LastWriteTime), $existingPluginHash" -ForegroundColor Yellow
-                        Write-Host "Compiled plugin:    $($_.Name), $($_.LastWriteTime), $compiledPluginHash" -ForegroundColor Green
+                        "`nExisting plugin:    $($existingPlugin.Name), $($existingPlugin.LastWriteTime), $existingPluginHash" | Write-Host -ForegroundColor Yellow
+                        "Compiled plugin:    $($_.Name), $($_.LastWriteTime), $compiledPluginHash" | Write-Host -ForegroundColor Green
                     }
                     Copy-Item -Path $_.FullName -Destination $pluginsDir -Recurse @copyParams
-                    if ($LASTEXITCODE) { Write-Host 'Plugin copy error.' -ForegroundColor Magenta; return }
+                    if ($LASTEXITCODE) { "Plugin copy error." | Write-Host -ForegroundColor Magenta; return }
                     $updatedPlugin = Get-Item "$pluginsDir/$($_.Name)"
                     $updatedPluginHash = (Get-FileHash $updatedPlugin -Algorithm MD5).Hash
-                    if ($updatedPluginHash -eq $compiledPluginHash) { Write-Host "Plugin successfully copied to $($_.Fullname)" -ForegroundColor Green }
-                    else { Write-Host "Plugin has not been copied." -ForegroundColor Magenta; return }
+                    if ($updatedPluginHash -eq $compiledPluginHash) { "Plugin successfully copied to $($_.Fullname)" | Write-Host -ForegroundColor Green }
+                    else { "Plugin has not been copied." | Write-Host -ForegroundColor Magenta; return }
                 }
             }else {
-                Write-Host `n"No new/updated plugins found. No operations were performed." -ForegroundColor Magenta
+               "`nNo new/updated plugins found. No operations were performed." | Write-Host -ForegroundColor Magenta
             }
         }catch {
             throw "Runtime error. `nException: $($_.Exception.Message) `nStacktrace: $($_.ScriptStackTrace)"
@@ -115,7 +115,7 @@ function Compile-SourceScript {
             if ($stdInFile) {
                 Remove-Item $stdInFile -Force
             }
-            Write-Host "End of compile wrapper." -ForegroundColor Cyan
+            "End of compile wrapper." | Write-Host -ForegroundColor Cyan
         }
     }
 }
