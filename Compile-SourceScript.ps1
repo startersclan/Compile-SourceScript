@@ -23,7 +23,7 @@ function Compile-SourceScript {
         # Define variables
         $SCRIPT_EXTS = '.sp', '.sma'
         $PLUGIN_EXTS = '.amxx', '.smx'
-        $COMPILE_BIN_NAME = 'compile.exe'
+        $COMPILE_BIN_NAME = if ($IsWindows -Or $env:OS) { 'compile.exe' } else { 'compile.sh' }
         $COMPILED_DIR_NAME = 'compiled'
         $PLUGINS_DIR_NAME = 'plugins'
 
