@@ -65,8 +65,14 @@ function Compile-SourceScript {
             $compiledDirItemsPost = Get-ChildItem $compiledDir -Recurse -Force | ? { $_.Extension -in $PLUGIN_EXTS } | Select-Object *, @{name='md5'; expression={(Get-FileHash $_.FullName -Algorithm MD5).hash}}
 
             # Get items with differing hashes
-            $hashesDiffObj = Compare-object -ReferenceObject $compiledDirItemsPre -DifferenceObject $compiledDirItemsPost -Property FullName, md5 | ? { $_.SideIndicator -eq '=>' }
-            $compiledDirItemsDiff = $compiledDirItemsPost | ? { $_.md5 -in $hashesDiffObj.md5 }
+            $compiledDirItemsDiff = if ($compiledDirItemsPost) {
+                if ($compiledDirItemsPre) {
+                    $hashesDiffObj = Compare-object -ReferenceObject $compiledDirItemsPre -DifferenceObject $compiledDirItemsPost -Property FullName, md5 | ? { $_.SideIndicator -eq '=>' }
+                    $compiledDirItemsPost | ? { $_.md5 -in $hashesDiffObj.md5 }
+                }else {
+                    $compiledDirItemsPost
+                }
+            }
 
             # Copy items to plugins folder
             if ($compiledDirItemsDiff) {
