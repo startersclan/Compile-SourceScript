@@ -1,4 +1,4 @@
-﻿function Compile-SourceScript {
+function Compile-SourceScript {
     <#
     .SYNOPSIS
     Compile-SourceScript is a wrapper for compiling *AMX Mod X* (.sma) and *SourceMod* (.sp) plugin source files for Valve's GoldSource / Source games.
