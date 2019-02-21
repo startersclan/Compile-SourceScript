@@ -91,9 +91,8 @@
                 }
             }
 
-            # Copy items to plugins folder
             if ($compiledDirItemsDiff) {
-                # List
+                # List successfully compiled plugins
                 "`nCompiled plugins:" | Write-Host -ForegroundColor Green
                 $compiledDirItemsDiff | % {
                     $compiledPluginHash = (Get-FileHash $_.FullName -Algorithm MD5).Hash
@@ -110,13 +109,18 @@
                     if (!$existingPlugin) {
                         "`nPlugin does not currently exist in the plugins directory." | Write-Host -ForegroundColor Yellow
                     }else {
+                        # Display the compiled and existing plugin's file info
                         $compiledPluginHash = (Get-FileHash $_.FullName -Algorithm MD5).Hash
                         $existingPluginHash = (Get-FileHash $existingPlugin -Algorithm MD5).Hash
                         "`nExisting plugin:    $($existingPlugin.Name), $($existingPlugin.LastWriteTime), $existingPluginHash" | Write-Host -ForegroundColor Yellow
                         "Compiled plugin:    $($_.Name), $($_.LastWriteTime), $compiledPluginHash" | Write-Host -ForegroundColor Green
                     }
+
+                    # Attempt to copy the compiled plugin to the plugin's folder
                     Copy-Item -Path $_.FullName -Destination $pluginsDir -Recurse @copyParams
+
                     if ($LASTEXITCODE) { "Plugin copy error." | Write-Host -ForegroundColor Magenta; return }
+                    # Alert the user on the situation of the plugin
                     $updatedPlugin = Get-Item "$pluginsDir/$($_.Name)"
                     $updatedPluginHash = (Get-FileHash $updatedPlugin -Algorithm MD5).Hash
                     if ($updatedPluginHash -eq $compiledPluginHash) { "Plugin successfully copied to $($_.Fullname)" | Write-Host -ForegroundColor Green }
