@@ -21,7 +21,7 @@ function Compile-SourceScript {
     Compiles the sourcemod plugin source file 'plugin2.sp' without user confirmation for the game Counter-Strike: Global Offensive.
 
     .LINK
-    https://github.com/theohbrothers/Compile-SourceScript
+    https://github.com/theohbrothers/compile-sourcescript
     #>
 
     [CmdletBinding()]
