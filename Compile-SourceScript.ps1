@@ -124,7 +124,7 @@ function Compile-SourceScript {
                         "Compiled plugin:    $($_.Name), $($_.LastWriteTime), $compiledPluginHash" | Write-Host -ForegroundColor Green
                     }
 
-                    # Attempt to copy the compiled plugin to the plugin's folder
+                    # Attempt to copy the compiled plugin to the plugins folder
                     Copy-Item -Path $_.FullName -Destination $pluginsDir -Recurse @copyParams
 
                     if ($LASTEXITCODE) { "Plugin copy error." | Write-Host -ForegroundColor Magenta; return }
