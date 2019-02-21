@@ -39,7 +39,7 @@ Compiles the sourcemod plugin source file `plugin2.sp` without user confirmation
             "command": "Powershell",
             "args": [
                 "-File",
-                "D:/git/Compile-SourceScript.ps1/Compile-SourceScript.ps1",
+                "D:/git/compile-sourcescript/Compile-SourceScript.ps1",
                 "-File",
                 "${file}",
                 "-Force"
