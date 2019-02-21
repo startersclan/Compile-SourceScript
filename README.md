@@ -43,19 +43,7 @@ Compiles the sourcemod plugin source file `plugin2.sp` without user confirmation
                 "-File",
                 "${file}",
                 "-Force"
-            ],
-            // Anything setting below is just fancy
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true
-            }
+            ]
         }
     ]
 }
