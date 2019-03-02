@@ -26,7 +26,7 @@ Compiles the AMX Mod X plugin source file `plugin2.sma` *without* user confirmat
 
 ### via VSCode
 
-[Build Tasks](https://code.visualstudio.com/docs/editor/tasks#vscode) can be utilized to ease the development of plugins right from within the code editor.
+[Build Tasks](https://code.visualstudio.com/docs/editor/tasks#vscode) can be utilized to ease the development of plugins within the code editor.
 
 ```json
 // In tasks.json
@@ -34,16 +34,33 @@ Compiles the AMX Mod X plugin source file `plugin2.sma` *without* user confirmat
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Compile-SourceScript",
+            "label": "Compile-SourceScript (pwsh)",
             "type": "process",
-            "command": "Powershell",
+            "command": "pwsh",
             "args": [
                 "-File",
-                "D:/git/compile-sourcescript/Compile-SourceScript.ps1",
+                "D:/Git/compile-sourcescript/Compile-SourceScript.ps1",
                 "-File",
                 "${file}",
                 "-Force"
-            ]
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Compile-SourceScript (powershell)",
+            "type": "process",
+            "command": "powershell",
+            "args": [
+                "-File",
+                "D:/Git/compile-sourcescript/Compile-SourceScript.ps1",
+                "-File",
+                "${file}",
+                "-Force"
+            ],
+            "group": "build"
         }
     ]
 }
