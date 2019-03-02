@@ -14,7 +14,7 @@ function Compile-SourceScript {
 
     .EXAMPLE
     ./Compile-SourceScript.ps1 -File ~/servers/czero/addons/amxmodx/scripting/plugin1.sma
-    Compiles the AMX Mod X plugin source file 'plugin1.sma' with user confirmation for game Counter-Strike 1.6.
+    Compiles the AMX Mod X plugin source file 'plugin1.sma' with user confirmation for the game Counter-Strike 1.6.
 
     .EXAMPLE
     ./Compile-SourceScript.ps1 -File ~/servers/csgo/addons/sourcemod/scripting/plugin2.sp -Force

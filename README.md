@@ -12,7 +12,7 @@ The script works by getting the specified plugin's source file compiled, and upo
 
 ### via Command Line
 
-Compiles the amxmodx plugin source file `plugin1.sma` with user confirmation for game Counter-Strike 1.6.
+Compiles the amxmodx plugin source file `plugin1.sma` with user confirmation for the game Counter-Strike 1.6.
 
 ```powershell
 ./Compile-SourceScript.ps1 -File ~/servers/czero/addons/amxmodx/scripting/plugin1.sma
