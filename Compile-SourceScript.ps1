@@ -1,23 +1,23 @@
 <#
 .SYNOPSIS
-Compile-SourceScript is a wrapper for compiling AMX Mod X (.sma) and SourceMod (.sp) plugin source files for GoldSource / Source games.
+Compile-SourceScript is a wrapper for compiling SourceMod (.sp) and AMX Mod X (.sma) plugin source files for Source / GoldSource games.
 
 .DESCRIPTION
 The script works by getting the specified plugin's source file compiled, and upon successful compilation, populating the respective mod's plugins directory with the newly compiled plugin.
 
 .PARAMETER File
-Path to the plugin's .sma or .sp file.
+Path to the plugin's .sp or .sma file.
 
 .PARAMETER Force
 Copies the newly compiled plugin to the plugins directory without user confirmation.
 
 .EXAMPLE
-./Compile-SourceScript.ps1 -File ~/servers/czero/addons/amxmodx/scripting/plugin1.sma
-Compiles the AMX Mod X plugin source file 'plugin1.sma' with user confirmation for the game Counter-Strike 1.6.
+./Compile-SourceScript.ps1 -File ~/servers/csgo/addons/sourcemod/scripting/plugin1.sp
+Compiles the SourceMod plugin source file 'plugin1.sp' with user confirmation for the game Counter-Strike: Global Offensive.
 
 .EXAMPLE
-./Compile-SourceScript.ps1 -File ~/servers/csgo/addons/sourcemod/scripting/plugin2.sp -Force
-Compiles the SourceMod plugin source file 'plugin2.sp' without user confirmation for the game Counter-Strike: Global Offensive.
+./Compile-SourceScript.ps1 -File ~/servers/czero/addons/amxmodx/scripting/plugin2.sma -Force
+Compiles the AMX Mod X plugin source file 'plugin2.sma' without user confirmation for the game Counter-Strike 1.6.
 
 .LINK
 https://github.com/theohbrothers/compile-sourcescript
