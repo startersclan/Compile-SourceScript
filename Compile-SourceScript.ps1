@@ -138,7 +138,7 @@ function Compile-SourceScript {
                "`nNo new/updated plugins found. No operations were performed." | Write-Host -ForegroundColor Magenta
             }
         }catch {
-            throw "Runtime error. `nException: $($_.Exception.Message) `nStacktrace: $($_.ScriptStackTrace)"
+            throw "Runtime error. Exception: $($_.Exception.Message)"
         }finally {
             # Cleanup
             if ($stdInFile) {
