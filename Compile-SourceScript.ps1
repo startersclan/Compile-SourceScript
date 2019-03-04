@@ -101,7 +101,7 @@ function Compile-SourceScript {
 
             if ($compiledDirItemsDiff) {
                 # List successfully compiled plugins
-                "`nCompiled plugins:" | Write-Host -ForegroundColor Green
+                "`nNewly compiled plugins:" | Write-Host -ForegroundColor Cyan
                 $compiledDirItemsDiff | % {
                     $compiledPluginHash = (Get-FileHash $_.FullName -Algorithm MD5).Hash
                     "    $($_.Name), $($_.LastWriteTime), $compiledPluginHash" | Write-Host -ForegroundColor Green
@@ -113,16 +113,17 @@ function Compile-SourceScript {
                         "`nThe scripts name does not match the compiled plugin's name." | Write-Host -ForegroundColor Magenta
                         return  # continue in %
                     }
+                    "`n$($_.Name):" | Write-Host -ForegroundColor Green
                     $existingPlugin = Get-Item "$pluginsDir/$($_.Name)" -ErrorAction SilentlyContinue
                     if (!$existingPlugin) {
-                        "`nPlugin does not currently exist in the plugins directory." | Write-Host -ForegroundColor Yellow
+                        "    Plugin does not currently exist in the plugins directory." | Write-Host -ForegroundColor Yellow
                     }else {
-                        # Display the compiled and existing plugin's file info
-                        $compiledPluginHash = (Get-FileHash $_.FullName -Algorithm MD5).Hash
                         $existingPluginHash = (Get-FileHash $existingPlugin -Algorithm MD5).Hash
-                        "`nExisting plugin:    $($existingPlugin.Name), $($existingPlugin.LastWriteTime), $existingPluginHash" | Write-Host -ForegroundColor Yellow
-                        "Compiled plugin:    $($_.Name), $($_.LastWriteTime), $compiledPluginHash" | Write-Host -ForegroundColor Green
+                        "    Existing: $($existingPlugin.LastWriteTime), $existingPluginHash" | Write-Host -ForegroundColor Yellow
                     }
+                    # Display the compiled and existing plugin's file info
+                    $compiledPluginHash = (Get-FileHash $_.FullName -Algorithm MD5).Hash
+                    "    Compiled: $($_.LastWriteTime), $compiledPluginHash" | Write-Host -ForegroundColor Green
 
                     # Attempt to copy the compiled plugin to the plugins folder
                     Copy-Item -Path $_.FullName -Destination $pluginsDir -Recurse @copyParams
@@ -131,11 +132,11 @@ function Compile-SourceScript {
                     # Alert the user on the situation of the plugin
                     $updatedPlugin = Get-Item "$pluginsDir/$($_.Name)"
                     $updatedPluginHash = (Get-FileHash $updatedPlugin -Algorithm MD5).Hash
-                    if ($updatedPluginHash -eq $compiledPluginHash) { "Plugin successfully copied to $($_.Fullname)" | Write-Host -ForegroundColor Green }
-                    else { "Plugin has not been copied." | Write-Host -ForegroundColor Magenta; return }
+                    if ($updatedPluginHash -eq $compiledPluginHash) { "`nPlugin successfully copied to $($_.Fullname)" | Write-Host -ForegroundColor Green }
+                    else { "`nPlugin not copied." | Write-Host -ForegroundColor Magenta; return }
                 }
             }else {
-               "`nNo new/updated plugins found. No operations were performed." | Write-Host -ForegroundColor Magenta
+               "`nNo newly compiled plugins found. No operations were performed." | Write-Host -ForegroundColor Magenta
             }
         }catch {
             throw "Runtime error. Exception: $($_.Exception.Message)"
