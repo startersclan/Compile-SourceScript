@@ -39,7 +39,7 @@ Compiles the AMX Mod X plugin source file `plugin2.sma` *without* user confirmat
             "command": "pwsh",
             "args": [
                 "-File",
-                "D:/Git/compile-sourcescript/Compile-SourceScript.ps1",
+                "D:/Git/Compile-SourceScript/Compile-SourceScript.ps1",
                 "-File",
                 "${file}",
                 "-Force"
@@ -55,7 +55,7 @@ Compiles the AMX Mod X plugin source file `plugin2.sma` *without* user confirmat
             "command": "powershell",
             "args": [
                 "-File",
-                "D:/Git/compile-sourcescript/Compile-SourceScript.ps1",
+                "D:/Git/Compile-SourceScript/Compile-SourceScript.ps1",
                 "-File",
                 "${file}",
                 "-Force"

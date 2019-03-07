@@ -21,7 +21,7 @@ function Compile-SourceScript {
     Compiles the AMX Mod X plugin source file 'plugin2.sma' without user confirmation for the game Counter-Strike 1.6.
 
     .LINK
-    https://github.com/theohbrothers/compile-sourcescript
+    https://github.com/theohbrothers/Compile-SourceScript
     #>
 
     [CmdletBinding()]
