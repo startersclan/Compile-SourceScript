@@ -21,7 +21,7 @@ Compiles the SourceMod plugin source file `plugin1.sp` with user confirmation fo
 Compiles the AMX Mod X plugin source file `plugin2.sma` *without* user confirmation for the game Counter-Strike 1.6.
 
 ```powershell
-./Compile-SourceScript.ps1 -File ~/servers/czero/addons/amxmodx/scripting/plugin2.sma -Force
+./Compile-SourceScript.ps1 -File ~/servers/cstrike/addons/amxmodx/scripting/plugin2.sma -Force
 ```
 
 ### via VSCode

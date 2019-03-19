@@ -16,7 +16,7 @@ Copies the newly compiled plugin to the plugins directory without user confirmat
 Compiles the SourceMod plugin source file 'plugin1.sp' with user confirmation for the game Counter-Strike: Global Offensive.
 
 .EXAMPLE
-./Compile-SourceScript.ps1 -File ~/servers/czero/addons/amxmodx/scripting/plugin2.sma -Force
+./Compile-SourceScript.ps1 -File ~/servers/cstrike/addons/amxmodx/scripting/plugin2.sma -Force
 Compiles the AMX Mod X plugin source file 'plugin2.sma' without user confirmation for the game Counter-Strike 1.6.
 
 .LINK
