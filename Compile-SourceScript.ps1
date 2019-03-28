@@ -104,16 +104,16 @@ function Compile-SourceScript {
                 "`nNewly compiled plugins:" | Write-Host -ForegroundColor Cyan
                 $compiledDirItemsDiff | % {
                     $compiledPluginHash = (Get-FileHash $_.FullName -Algorithm MD5).Hash
-                    "    $($_.Name), $($_.LastWriteTime), $compiledPluginHash" | Write-Host -ForegroundColor Green
+                    "    $($_.Name), $($_.LastWriteTime), $compiledPluginHash" | Write-Host -ForegroundColor White
                 }
 
                 New-Item -Path $pluginsDir -ItemType Directory -Force | Out-Null
                 $compiledDirItemsDiff | % {
+                    "`n$($_.Name):" | Write-Host -ForegroundColor Green
                     if ($_.Basename -ne $script.Basename) {
-                        "`nThe scripts name does not match the compiled plugin's name." | Write-Host -ForegroundColor Magenta
+                        "The plugin's name does not match the specified script's name." | Write-Host -ForegroundColor Magenta
                         return  # continue in %
                     }
-                    "`n$($_.Name):" | Write-Host -ForegroundColor Green
                     $existingPlugin = Get-Item "$pluginsDir/$($_.Name)" -ErrorAction SilentlyContinue
                     if (!$existingPlugin) {
                         "    Plugin does not currently exist in the plugins directory." | Write-Host -ForegroundColor Yellow
