@@ -1,0 +1,34 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compile-SourceScript (pwsh)",
+            "type": "process",
+            "command": "pwsh",
+            "args": [
+                "-File",
+                "D:/Git/Compile-SourceScript/Compile-SourceScript.ps1",
+                "-File",
+                "${file}",
+                "-Force"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Compile-SourceScript (powershell)",
+            "type": "process",
+            "command": "powershell",
+            "args": [
+                "-File",
+                "D:/Git/Compile-SourceScript/Compile-SourceScript.ps1",
+                "-File",
+                "${file}",
+                "-Force"
+            ],
+            "group": "build"
+        }
+    ]
+}
