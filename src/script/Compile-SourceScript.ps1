@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Compile-SourceScript is a wrapper for compiling SourceMod (.sp) and AMX Mod X (.sma) plugin source files for Source / GoldSource games.
+A wrapper for compiling SourceMod (.sp) and AMX Mod X (.sma) plugin source files for Source / GoldSource games.
 
 .DESCRIPTION
 Specified plugins source files are compiled and copied into the respective mod's plugins directory upon success.
