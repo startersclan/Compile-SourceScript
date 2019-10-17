@@ -52,6 +52,7 @@ function Compile-SourceScript {
     )
 
     begin {
+        "Starting Compile-SourceScript" | Write-Host -ForegroundColor Cyan
         $ErrorActionPreference = 'Stop'
         $MOD = @{
             sourcemod = @{
