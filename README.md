@@ -12,6 +12,8 @@ Specified plugins source files are compiled and copied into the respective mod's
 
 ## Usage
 
+`Compile-SourceScript` may be used as either a script or a module.
+
 ### Examples
 
 Compiles the **SourceMod** plugin source file `plugin1.sp`, and installs the compiled plugin with user confirmation for the game Counter-Strike: Global Offensive.
