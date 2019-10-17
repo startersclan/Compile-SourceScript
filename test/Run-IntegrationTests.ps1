@@ -12,7 +12,7 @@ $functionTestScriptBlock = {
         Compile-SourceScript @cmdArgs
     }catch {
         $_ | Write-Error
-        $failedCount++
+        $script:failedCount++
     }
 }
 
