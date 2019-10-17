@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Compile-SourceScript is a wrapper for compiling **SourceMod** ([`.sp`](https://wiki.alliedmods.net/Compiling_SourceMod_Plugins)) and **AMX Mod X** ([`.sma`](https://wiki.alliedmods.net/Compiling_Plugins_(AMX_Mod_X))) plugin source files for **Source / GoldSource** games.
+Compile-SourceScript is a PowerShell script / module that acts as a wrapper for compiling [**SourceMod**](https://www.sourcemod.net/) [`.sp`](https://wiki.alliedmods.net/Compiling_SourceMod_Plugins) and [**AMX Mod X**](https://www.amxmodx.org/) [`.sma`](https://wiki.alliedmods.net/Compiling_Plugins_(AMX_Mod_X)) plugin source files for [**Source** / **Goldsource**](https://github.com/startersclan/docker-sourceservers) games.
 
 Specified plugins source files are compiled and copied into the respective mod's `plugins` directory upon success.
 
@@ -12,19 +12,21 @@ Specified plugins source files are compiled and copied into the respective mod's
 
 ## Usage
 
+### Examples
+
+Compiles the **SourceMod** plugin source file `plugin1.sp`, and installs the compiled plugin with user confirmation for the game Counter-Strike: Global Offensive.
+
+```powershell
+./Compile-SourceScript.ps1 -File ~/servers/csgo/addons/sourcemod/scripting/plugin1.sp
+```
+
+Compiles the **AMX Mod X** plugin source file `plugin2.sma` *without* using the mod's compiler wrapper, and installs the compiled plugin *without* user confirmation for the game Counter-Strike 1.6.
+
+```powershell
+./Compile-SourceScript.ps1 -File ~/servers/cstrike/addons/amxmodx/scripting/plugin2.sma -SkipWrapper -Force
+```
+
 ### Functions
-
-Compiles the **SourceMod** plugin source file `plugin1.sp` with user confirmation for the game *Counter-Strike: Global Offensive*.
-
-```powershell
-Compile-SourceScript -File ~/servers/csgo/addons/sourcemod/scripting/plugin1.sp
-```
-
-Compiles the **AMX Mod X** plugin source file `plugin2.sma` *without* user confirmation for the game *Counter-Strike 1.6*.
-
-```powershell
-Compile-SourceScript -File ~/servers/cstrike/addons/amxmodx/scripting/plugin2.sma -Force
-```
 
 To list all available functions of the module:
 
