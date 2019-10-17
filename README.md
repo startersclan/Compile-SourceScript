@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Compile-SourceScript is a PowerShell script / module that acts as a wrapper for compiling [**SourceMod**](https://www.sourcemod.net/) [`.sp`](https://wiki.alliedmods.net/Compiling_SourceMod_Plugins) and [**AMX Mod X**](https://www.amxmodx.org/) [`.sma`](https://wiki.alliedmods.net/Compiling_Plugins_(AMX_Mod_X)) plugin source files for [**Source** / **Goldsource**](https://github.com/startersclan/docker-sourceservers) games.
+`Compile-SourceScript` is a wrapper for compiling [**SourceMod**](https://www.sourcemod.net/) [`.sp`](https://wiki.alliedmods.net/Compiling_SourceMod_Plugins) and [**AMX Mod X**](https://www.amxmodx.org/) [`.sma`](https://wiki.alliedmods.net/Compiling_Plugins_(AMX_Mod_X)) plugin source files for [**Source** / **Goldsource**](https://github.com/startersclan/docker-sourceservers) games.
 
 Specified plugins source files are compiled and copied into the respective mod's `plugins` directory upon success.
 
@@ -12,7 +12,7 @@ Specified plugins source files are compiled and copied into the respective mod's
 
 ## Usage
 
-`Compile-SourceScript` may be used as either a script or a module.
+`Compile-SourceScript` may be used as a script or a module.
 
 ### Examples
 
@@ -45,6 +45,7 @@ A sample tasks file can be found [here](docs/samples/.vscode/tasks.json.sample).
 ## Administration
 
 ### Versions
+
 To list versions of the module on `PSGallery`:
 
 ```powershell
