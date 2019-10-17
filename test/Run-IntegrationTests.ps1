@@ -47,7 +47,7 @@ $cmdArgs | Out-String -Stream | ? { $_ } | Write-Verbose
 # The following test should be run only for Windows, reason being that the non-Windows version:
 # - Does not take in arguments, instead compiles all plugins within the scripting directory
 # - Displays all the output using 'less' at the end of the compilation, thus is limited to interactive use
-if ($IsWindows -Or $env:OS) {
+if ($env:OS) {
     $cmdArgs = @{
         File = '..\test\mod\amxmodx\addons\amxmodx\scripting\plugin1.sma' | Convert-Path
         Force = $true

@@ -93,7 +93,7 @@ function Compile-SourceScript {
         if (!$MOD_NAME) {
             throw "File is not a .sp or .sma source file."
         }
-        $COMPILER_NAME = if ($IsWindows -Or $env:OS) {
+        $COMPILER_NAME = if ($env:OS) {
             if ($PSBoundParameters['SkipWrapper']) { $MOD[$MOD_NAME]['compiler']['windows']['bin'] }
             else { $MOD[$MOD_NAME]['compiler']['windows']['wrapper'] }
         }else {
