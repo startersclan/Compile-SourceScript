@@ -25,7 +25,7 @@ $cmdArgs = @{
     File = '..\test\mod\sourcemod\addons\sourcemod\scripting\plugin1.sp' | Convert-Path
     Force = $true
 }
-$cmdArgs | Out-String -Stream | ? { $_ } | Write-Verbose
+$cmdArgs | Out-String -Stream | % { $_.Trim() } | ? { $_ } | Write-Verbose
 1..2 | % { "Iteration: $_" | Write-Host; & $functionTestScriptBlock }
 
 
@@ -35,7 +35,7 @@ $cmdArgs = @{
     Force = $true
     SkipWrapper = $true
 }
-$cmdArgs | Out-String -Stream | ? { $_ } | Write-Verbose
+$cmdArgs | Out-String -Stream | % { $_.Trim() } | ? { $_ } | Write-Verbose
 1..2 | % { "Iteration: $_" | Write-Host; & $functionTestScriptBlock }
 
 
@@ -52,7 +52,7 @@ if ($env:OS) {
         File = '..\test\mod\amxmodx\addons\amxmodx\scripting\plugin1.sma' | Convert-Path
         Force = $true
     }
-    $cmdArgs | Out-String -Stream | ? { $_ } | Write-Verbose
+    $cmdArgs | Out-String -Stream | % { $_.Trim() } | ? { $_ } | Write-Verbose
     1..2 | % { "Iteration: $_" | Write-Host; & $functionTestScriptBlock }
 }else { "Skipping: Test only applicable to Windows." | Write-Host }
 
@@ -62,7 +62,7 @@ $cmdArgs = @{
     Force = $true
     SkipWrapper = $true
 }
-$cmdArgs | Out-String -Stream | ? { $_ } | Write-Verbose
+$cmdArgs | Out-String -Stream | % { $_.Trim() } | ? { $_ } | Write-Verbose
 1..2 | % { "Iteration: $_" | Write-Host; & $functionTestScriptBlock }
 
 
