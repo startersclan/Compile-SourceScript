@@ -2,7 +2,7 @@
 
 ## Introduction
 
-A powershell module for compiling **SourceMod** ([`.sp`](https://wiki.alliedmods.net/Compiling_SourceMod_Plugins)) and **AMX Mod X** ([`.sma`](https://wiki.alliedmods.net/Compiling_Plugins_(AMX_Mod_X))) plugin source files for **Source / GoldSource** games.
+Compile-SourceScript is a wrapper for compiling **SourceMod** ([`.sp`](https://wiki.alliedmods.net/Compiling_SourceMod_Plugins)) and **AMX Mod X** ([`.sma`](https://wiki.alliedmods.net/Compiling_Plugins_(AMX_Mod_X))) plugin source files for **Source / GoldSource** games.
 
 Specified plugins source files are compiled and copied into the respective mod's `plugins` directory upon success.
 
