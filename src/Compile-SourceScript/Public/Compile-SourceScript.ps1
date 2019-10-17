@@ -16,11 +16,11 @@ function Compile-SourceScript {
     Copies the newly compiled plugin to the plugins directory without user confirmation.
 
     .EXAMPLE
-    ./Compile-SourceScript.ps1 -File ~/servers/csgo/addons/sourcemod/scripting/plugin1.sp
+    Compile-SourceScript -File ~/servers/csgo/addons/sourcemod/scripting/plugin1.sp
     Compiles the SourceMod plugin source file 'plugin1.sp', and installs the compiled plugin with user confirmation for the game Counter-Strike: Global Offensive.
 
     .EXAMPLE
-    ./Compile-SourceScript.ps1 -File ~/servers/cstrike/addons/amxmodx/scripting/plugin2.sma -SkipWrapper -Force
+    Compile-SourceScript -File ~/servers/cstrike/addons/amxmodx/scripting/plugin2.sma -SkipWrapper -Force
     Compiles the AMX Mod X plugin source file 'plugin2.sma' without using the mod's compiler wrapper, and installs the compiled plugin without user confirmation for the game Counter-Strike 1.6.
 
     .LINK
