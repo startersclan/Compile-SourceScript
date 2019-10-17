@@ -52,6 +52,7 @@ function Compile-SourceScript {
     )
 
     begin {
+        "Starting Compile-SourceScript" | Write-Host -ForegroundColor Cyan
         $ErrorActionPreference = 'Stop'
         $MOD = @{
             sourcemod = @{
@@ -155,7 +156,9 @@ function Compile-SourceScript {
             $compiledDirItemsDiff = if ($compiledDirItemsPost) {
                                         if ($compiledDirItemsPre) {
                                             $hashesDiffObj = Compare-object -ReferenceObject $compiledDirItemsPre -DifferenceObject $compiledDirItemsPost -Property FullName, md5 | ? { $_.SideIndicator -eq '=>' }
-                                            $compiledDirItemsPost | ? { $_.md5 -in $hashesDiffObj.md5 }
+                                            if ($hashesDiffObj) {
+                                                $compiledDirItemsPost | ? { $_.md5 -in $hashesDiffObj.md5 }
+                                            }
                                         }else {
                                             $compiledDirItemsPost
                                         }
