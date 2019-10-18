@@ -29,32 +29,6 @@
                 "-Force"
             ],
             "group": "build"
-        },
-        {
-            "label": "Compile-SourceScript.ps1 (pwsh)",
-            "type": "process",
-            "command": "pwsh",
-            "args": [
-                "-Command",
-                "D:/path/to/Compile-SourceScript/src/script/Compile-SourceScript.ps1",
-                "-File",
-                "${file}",
-                "-Force"
-            ],
-            "group": "build"
-        },
-        {
-            "label": "Compile-SourceScript.ps1 (powershell)",
-            "type": "process",
-            "command": "powershell",
-            "args": [
-                "-Command",
-                "D:/path/to/Compile-SourceScript/src/script/Compile-SourceScript.ps1",
-                "-File",
-                "${file}",
-                "-Force"
-            ],
-            "group": "build"
         }
     ]
 }

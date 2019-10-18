@@ -64,10 +64,6 @@ Compiles the *AMX Mod X* plugin source file `plugin2.sma` *without* using the mo
 Compile-SourceScript -File ~/servers/cstrike/addons/amxmodx/scripting/plugin2.sma -SkipWrapper -Force
 ```
 
-### Script
-
-The script version of `Compile-SourceScript` is also provided and can be found [here](src/script/Compile-SourceScript.ps1).
-
 ### VSCode
 
 `Compile-SourceScript` can be invoked via [Build Tasks](https://code.visualstudio.com/docs/editor/tasks#vscode) in **VSCode**. A sample tasks file can be found [here](docs/samples/.vscode/tasks.json.sample).
