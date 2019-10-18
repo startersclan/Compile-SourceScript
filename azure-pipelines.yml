@@ -39,9 +39,9 @@ stages:
     strategy:
       matrix:
         6.2.0:
-          containerImage: joeltimothyoh/powershell:6.2.0-ubuntu-18.04-git
+          containerImage: joeltimothyoh/powershell:6.2.0-ubuntu-18.04-git-sudo
         6.1.0:
-          containerImage: joeltimothyoh/powershell:6.1.0-ubuntu-18.04-git
+          containerImage: joeltimothyoh/powershell:6.1.0-ubuntu-18.04-git-sudo
     container: $[ variables['containerImage'] ]
     steps:
     - checkout: self
