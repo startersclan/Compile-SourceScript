@@ -1,5 +1,14 @@
 # Compile-SourceScript
 
+[![badge-build-azuredevops-build-img][]][badge-build-azuredevops-build-src] [![badge-version-github-release-img][]][badge-version-github-release-src] [![badge-version-powershellgallery-releases-img][]][badge-version-powershellgallery-releases-src]
+
+[badge-build-azuredevops-build-img]: https://img.shields.io/azure-devops/build/startersclan/Compile-SourceScript/4/master.svg?label=build&logo=azure-pipelines&style=flat-square
+[badge-build-azuredevops-build-src]: https://dev.azure.com/startersclan/Compile-SourceScript/_build?definitionId=4
+[badge-version-github-release-img]: https://img.shields.io/github/v/release/startersclan/Compile-SourceScript?style=flat-square
+[badge-version-github-release-src]: https://github.com/startersclan/Compile-SourceScript/releases
+[badge-version-powershellgallery-releases-img]: https://img.shields.io/powershellgallery/v/Compile-SourceScript?logo=powershell&logoColor=white&label=PSGallery&labelColor=&style=flat-square
+[badge-version-powershellgallery-releases-src]: https://www.powershellgallery.com/packages/Compile-SourceScript/
+
 A PowerShell module for compiling [**SourceMod**](https://www.sourcemod.net/) [`.sp`](https://wiki.alliedmods.net/Compiling_SourceMod_Plugins) and [**AMX Mod X**](https://www.amxmodx.org/) [`.sma`](https://wiki.alliedmods.net/Compiling_Plugins_(AMX_Mod_X)) plugin source files for [**Source**](https://developer.valvesoftware.com/wiki/Source) / [**Goldsource**](https://developer.valvesoftware.com/wiki/Goldsource) games.
 
 ## Introduction
