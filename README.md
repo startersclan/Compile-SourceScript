@@ -1,14 +1,23 @@
 # Compile-SourceScript
 
+[![badge-build-azuredevops-build-img][]][badge-build-azuredevops-build-src] [![badge-version-github-release-img][]][badge-version-github-release-src] [![badge-version-powershellgallery-releases-img][]][badge-version-powershellgallery-releases-src]
+
+[badge-build-azuredevops-build-img]: https://img.shields.io/azure-devops/build/startersclan/Compile-SourceScript/4/master.svg?label=build&logo=azure-pipelines&style=flat-square
+[badge-build-azuredevops-build-src]: https://dev.azure.com/startersclan/Compile-SourceScript/_build?definitionId=4
+[badge-version-github-release-img]: https://img.shields.io/github/v/release/startersclan/Compile-SourceScript?style=flat-square
+[badge-version-github-release-src]: https://github.com/startersclan/Compile-SourceScript/releases
+[badge-version-powershellgallery-releases-img]: https://img.shields.io/powershellgallery/v/Compile-SourceScript?logo=powershell&logoColor=white&label=PSGallery&labelColor=&style=flat-square
+[badge-version-powershellgallery-releases-src]: https://www.powershellgallery.com/packages/Compile-SourceScript/
+
+A PowerShell module for compiling [**SourceMod**](https://www.sourcemod.net/) [`.sp`](https://wiki.alliedmods.net/Compiling_SourceMod_Plugins) and [**AMX Mod X**](https://www.amxmodx.org/) [`.sma`](https://wiki.alliedmods.net/Compiling_Plugins_(AMX_Mod_X)) plugin source files for [**Source**](https://developer.valvesoftware.com/wiki/Source) / [**Goldsource**](https://developer.valvesoftware.com/wiki/Goldsource) games.
+
 ## Introduction
 
-`Compile-SourceScript` is a wrapper for compiling [**SourceMod**](https://www.sourcemod.net/) [`.sp`](https://wiki.alliedmods.net/Compiling_SourceMod_Plugins) and [**AMX Mod X**](https://www.amxmodx.org/) [`.sma`](https://wiki.alliedmods.net/Compiling_Plugins_(AMX_Mod_X)) plugin source files for [**Source** / **Goldsource**](https://github.com/startersclan/docker-sourceservers) games.
-
-Specified plugins source files are compiled and copied into the respective mod's `plugins` directory upon success.
+`Compile-SourceScript` is a wrapper that eases development of each mod's plugins by first getting source files compiled into plugins, which, if found to be new or possess a differing hash, are then copied into the respective mod's `plugins` directory .
 
 ## Requirements
 
-- **Windows** with [Powershell 4.0 or later](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-windows-powershell?view=powershell-5.1), or ***nix** with [Powershell Core](https://github.com/powershell/powershell).
+- **Windows** with [PowerShell 4.0 or later](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-windows-powershell?view=powershell-5.1), or ***nix** with [PowerShell Core](https://github.com/powershell/powershell).
 
 ## Usage
 
@@ -19,21 +28,13 @@ Specified plugins source files are compiled and copied into the respective mod's
 Compiles the **SourceMod** plugin source file `plugin1.sp`, and installs the compiled plugin with user confirmation for the game Counter-Strike: Global Offensive.
 
 ```powershell
-./Compile-SourceScript.ps1 -File ~/servers/csgo/addons/sourcemod/scripting/plugin1.sp
+Compile-SourceScript -File ~/servers/csgo/addons/sourcemod/scripting/plugin1.sp
 ```
 
 Compiles the **AMX Mod X** plugin source file `plugin2.sma` *without* using the mod's compiler wrapper, and installs the compiled plugin *without* user confirmation for the game Counter-Strike 1.6.
 
 ```powershell
-./Compile-SourceScript.ps1 -File ~/servers/cstrike/addons/amxmodx/scripting/plugin2.sma -SkipWrapper -Force
-```
-
-### Functions
-
-To list all available functions of the module:
-
-```powershell
-Get-Command -Module Compile-SourceScript
+Compile-SourceScript -File ~/servers/cstrike/addons/amxmodx/scripting/plugin2.sma -SkipWrapper -Force
 ```
 
 ### VSCode

@@ -1,0 +1,80 @@
+trigger:
+  branches:
+    include:
+    - '*'
+  tags:
+    include:
+    - '*'
+pr: none
+
+resources:
+  repositories:
+  - repository: PSModulePublisher
+    type: github
+    name: theohbrothers/PSModulePublisher
+    endpoint: startersclan                   # Check for your 'Type: Github' connection under 'Project Settings' > 'Service connections'
+    ref: refs/tags/v0.2.1
+  - repository: PSRepositoryReleaseManager
+    type: github
+    name: theohbrothers/PSRepositoryReleaseManager
+    endpoint: startersclan
+    ref: refs/tags/v0.2.1
+
+stages:
+- stage: build_test
+  displayName: Build, Test
+  jobs:
+  - job: windows_pwsh
+    displayName: '[Windows] PowerShell Core'
+    pool:
+      vmImage: windows-2019
+    steps:
+    - checkout: self
+      submodules: recursive
+    - template: templates/azure-pipelines/windows/pwsh/continuous-build.yml@PSModulePublisher
+  - job: linux_container
+    displayName: '[Linux] [Container] PowerShell'
+    pool:
+      vmImage: ubuntu-16.04
+    strategy:
+      matrix:
+        6.2.0:
+          containerImage: joeltimothyoh/powershell:6.2.0-ubuntu-18.04-git-sudo
+        6.1.0:
+          containerImage: joeltimothyoh/powershell:6.1.0-ubuntu-18.04-git-sudo
+    container: $[ variables['containerImage'] ]
+    steps:
+    - checkout: self
+      submodules: recursive
+    - template: templates/azure-pipelines/linux/continuous-build.yml@PSModulePublisher
+  - job: windows_powershell_5_1
+    displayName: '[Windows] PowerShell 5.1'
+    pool:
+      vmImage: windows-2019
+    steps:
+    - checkout: self
+      submodules: recursive
+    - template: templates/azure-pipelines/windows/powershell/continuous-build.yml@PSModulePublisher
+  - job: windows_powershell_5_0
+    displayName: '[Windows] PowerShell 5.0'
+    pool:
+      vmImage: vs2015-win2012r2
+    steps:
+    - checkout: self
+      submodules: recursive
+    - template: templates/azure-pipelines/windows/powershell/continuous-build.yml@PSModulePublisher
+- stage: publish_release
+  displayName: Publish, Release
+  dependsOn: build_test
+  jobs:
+  - job: linux_container
+    displayName: '[Linux] [Container] PowerShell Core'
+    pool:
+      vmImage: ubuntu-16.04
+    container: joeltimothyoh/powershell:6.1.0-ubuntu-18.04-git-sudo
+    steps:
+    - checkout: self
+      submodules: recursive
+    - template: templates/azure-pipelines/linux/continuous-build.yml@PSModulePublisher
+    - template: templates/azure-pipelines/linux/publish.yml@PSModulePublisher
+    - template: templates/azure-pipelines/pwsh/release.yml@PSRepositoryReleaseManager
