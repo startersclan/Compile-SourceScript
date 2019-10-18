@@ -39,7 +39,7 @@ try {
 
         # Install linux dependencies
         $shellArgs = @(
-            'scripts/linux/sourcepawn-dependencies.sh'
+            'linux/sourcepawn-dependencies.sh'
         )
         & $provisionScriptBlock
     }
