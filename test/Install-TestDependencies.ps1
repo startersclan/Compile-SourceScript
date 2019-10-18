@@ -3,29 +3,50 @@ param()
 
 $ErrorActionPreference = 'Stop'
 
-# Install Pester if needed
-"Checking Pester version" | Write-Host
-$pesterMinimumVersion = [version]'4.0.0'
-$pester = Get-Module 'Pester' -ListAvailable -ErrorAction SilentlyContinue
-if (!$pester -or !($pester.Version -gt $pesterMinimumVersion)) {
-    "Installing Pester" | Write-Host
-    Install-Module -Name 'Pester' -Repository 'PSGallery' -MinimumVersion $pesterMinimumVersion -Scope CurrentUser -Force
-}
-Get-Module Pester -ListAvailable
+try {
+    Push-Location $PSScriptRoot
 
-Set-StrictMode -Off
-if ($IsLinux) {
-    $provisionScript = {
-        bash -e -c "$shellScript" | Write-Host
-        if ($LASTEXITCODE) { throw "An error occurred." }
+    # Install Pester if needed
+    "Checking Pester version" | Write-Host
+    $pesterMinimumVersion = [version]'4.0.0'
+    $pester = Get-Module 'Pester' -ListAvailable -ErrorAction SilentlyContinue
+    if (!$pester -or !($pester.Version -gt $pesterMinimumVersion)) {
+        "Installing Pester" | Write-Host
+        Install-Module -Name 'Pester' -Repository 'PSGallery' -MinimumVersion $pesterMinimumVersion -Scope CurrentUser -Force
     }
-    # Install lib32stdc++6
-    $shellScript = @"
-echo 'Installing lib32stdc++6'
-if ! dpkg -l lib32stdc++6; then
-    apt-get update && apt-get install -y lib32stdc++6
-fi
-"@
-    & $provisionScript
+    Get-Module Pester -ListAvailable
+
+    Set-StrictMode -Off
+    if ($IsLinux) {
+        "Installing dependencies for linux" | Write-Host
+
+        # Provisioning script block
+        $provisionScriptBlock = {
+            $sudo = sh -c 'command -v sudo'
+            $shellBin = sh -c 'command -v bash || command -v sh'
+            $sudo | Write-Host
+            $shellBin | Write-Host
+            "Shell command:" | Write-Verbose
+            $script:shellArgs | Write-Verbose
+            if ($sudo) {
+                'Executing command with sudo' | Write-Host
+                & $sudo $shellBin @script:shellArgs | Write-Host
+            }else {
+                & $shellBin @script:shellArgs | Write-Host
+            }
+            if ($LASTEXITCODE) { throw "An error occurred." }
+        }
+
+        # Install linux dependencies
+        $shellArgs = @(
+            'scripts/linux/sourcepawn-dependencies.sh'
+        )
+        & $provisionScriptBlock
+    }
+    Set-StrictMode -Version Latest
+
+}catch {
+    throw
+}finally{
+    Pop-Location
 }
-Set-StrictMode -Version Latest
