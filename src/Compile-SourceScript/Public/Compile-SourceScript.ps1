@@ -29,8 +29,8 @@ function Compile-SourceScript {
 
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory=$False)]
-        [ValidateScript({ Test-Path -Path $_ -PathType Leaf })]
+        [Parameter(Mandatory=$True)]
+        [ValidateNotNullOrEmpty()]
         $File
         ,
         [Parameter(Mandatory=$False)]
@@ -41,8 +41,21 @@ function Compile-SourceScript {
     )
 
     begin {
-        "Starting Compile-SourceScript" | Write-Host -ForegroundColor Cyan
         $ErrorActionPreference = 'Stop'
+        "Starting Compile-SourceScript" | Write-Host -ForegroundColor Cyan
+
+        # Verify the specified item's type and extension
+        $sourceFile = Get-Item -Path $PSBoundParameters['File']
+        if (!(Test-Path -Path $sourceFile.FullName -PathType Leaf)) {
+            throw "The item is not a file."
+        }
+        $MOD_NAME = if ($sourceFile.Extension -eq '.sp') { 'sourcemod' }
+                    elseif ($sourceFile.Extension -eq '.sma') { 'amxmodx' }
+        if (!$MOD_NAME) {
+            throw "File is not a '.sp' or '.sma' source file."
+        }
+
+        # Initialize variables
         $MOD = @{
             sourcemod = @{
                 script_ext = '.sp'
@@ -77,11 +90,6 @@ function Compile-SourceScript {
                 }
             }
         }
-        $MOD_NAME = if ([System.IO.Path]::GetExtension($PSBoundParameters['File']) -eq '.sp') { 'sourcemod' }
-                    elseif ([System.IO.Path]::GetExtension($PSBoundParameters['File']) -eq '.sma') { 'amxmodx' }
-        if (!$MOD_NAME) {
-            throw "File is not a .sp or .sma source file."
-        }
         $COMPILER_NAME = if ($env:OS) {
             if ($PSBoundParameters['SkipWrapper']) { $MOD[$MOD_NAME]['compiler']['windows']['bin'] }
             else { $MOD[$MOD_NAME]['compiler']['windows']['wrapper'] }
@@ -89,20 +97,13 @@ function Compile-SourceScript {
             if ($PSBoundParameters['SkipWrapper']) { $MOD[$MOD_NAME]['compiler']['others']['bin'] }
             else { $MOD[$MOD_NAME]['compiler']['others']['wrapper'] }
         }
+        $SCRIPTING_DIR = $sourceFile.DirectoryName
+        $COMPILED_DIR = Join-Path $SCRIPTING_DIR $MOD[$MOD_NAME]['compiled_dir_name']
+        $PLUGINS_DIR = Join-Path (Split-Path $SCRIPTING_DIR -Parent) $MOD[$MOD_NAME]['plugins_dir_name']
 
-        try {
-            $sourceFile = Get-Item -Path $PSBoundParameters['File']
+        # Verify the presence of the compiler item
+        $compiler = Get-Item -Path (Join-Path $SCRIPTING_DIR $COMPILER_NAME)
 
-            # Normalize paths
-            $SCRIPTING_DIR = $sourceFile.DirectoryName
-            $COMPILED_DIR = Join-Path $SCRIPTING_DIR $MOD[$MOD_NAME]['compiled_dir_name']
-            $PLUGINS_DIR = Join-Path (Split-Path $SCRIPTING_DIR -Parent) $MOD[$MOD_NAME]['plugins_dir_name']
-
-             # Validate compiler binary
-            $compiler = Get-Item -Path (Join-Path $SCRIPTING_DIR $COMPILER_NAME)
-        }catch {
-            throw
-        }
     }process {
         try {
             "Compiler: '$($compiler.FullName)'" | Write-Host
