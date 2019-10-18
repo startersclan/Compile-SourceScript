@@ -29,8 +29,8 @@ function Compile-SourceScript {
 
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory=$False)]
-        [ValidateScript({ Test-Path -Path $_ -PathType Leaf })]
+        [Parameter(Mandatory=$True)]
+        [ValidateNotNullOrEmpty()]
         $File
         ,
         [Parameter(Mandatory=$False)]
@@ -41,8 +41,21 @@ function Compile-SourceScript {
     )
 
     begin {
-        "Starting Compile-SourceScript" | Write-Host -ForegroundColor Cyan
         $ErrorActionPreference = 'Stop'
+        "Starting Compile-SourceScript" | Write-Host -ForegroundColor Cyan
+
+        # Verify the specified item's type and extension
+        $sourceFile = Get-Item -Path $PSBoundParameters['File']
+        if (!(Test-Path -Path $sourceFile.FullName -PathType Leaf)) {
+            throw "The item is not a file."
+        }
+        $MOD_NAME = if ($sourceFile.Extension -eq '.sp') { 'sourcemod' }
+                    elseif ($sourceFile.Extension -eq '.sma') { 'amxmodx' }
+        if (!$MOD_NAME) {
+            throw "File is not a '.sp' or '.sma' source file."
+        }
+
+        # Initialize variables
         $MOD = @{
             sourcemod = @{
                 script_ext = '.sp'
@@ -77,11 +90,6 @@ function Compile-SourceScript {
                 }
             }
         }
-        $MOD_NAME = if ([System.IO.Path]::GetExtension($PSBoundParameters['File']) -eq '.sp') { 'sourcemod' }
-                    elseif ([System.IO.Path]::GetExtension($PSBoundParameters['File']) -eq '.sma') { 'amxmodx' }
-        if (!$MOD_NAME) {
-            throw "File is not a .sp or .sma source file."
-        }
         $COMPILER_NAME = if ($env:OS) {
             if ($PSBoundParameters['SkipWrapper']) { $MOD[$MOD_NAME]['compiler']['windows']['bin'] }
             else { $MOD[$MOD_NAME]['compiler']['windows']['wrapper'] }
@@ -89,20 +97,13 @@ function Compile-SourceScript {
             if ($PSBoundParameters['SkipWrapper']) { $MOD[$MOD_NAME]['compiler']['others']['bin'] }
             else { $MOD[$MOD_NAME]['compiler']['others']['wrapper'] }
         }
+        $SCRIPTING_DIR = $sourceFile.DirectoryName
+        $COMPILED_DIR = Join-Path $SCRIPTING_DIR $MOD[$MOD_NAME]['compiled_dir_name']
+        $PLUGINS_DIR = Join-Path (Split-Path $SCRIPTING_DIR -Parent) $MOD[$MOD_NAME]['plugins_dir_name']
 
-        try {
-            $sourceFile = Get-Item -Path $PSBoundParameters['File']
+        # Verify the presence of the compiler item
+        $compiler = Get-Item -Path (Join-Path $SCRIPTING_DIR $COMPILER_NAME)
 
-            # Normalize paths
-            $SCRIPTING_DIR = $sourceFile.DirectoryName
-            $COMPILED_DIR = Join-Path $SCRIPTING_DIR $MOD[$MOD_NAME]['compiled_dir_name']
-            $PLUGINS_DIR = Join-Path (Split-Path $SCRIPTING_DIR -Parent) $MOD[$MOD_NAME]['plugins_dir_name']
-
-             # Validate compiler binary
-            $compiler = Get-Item -Path (Join-Path $SCRIPTING_DIR $COMPILER_NAME)
-        }catch {
-            throw
-        }
     }process {
         try {
             "Compiler: '$($compiler.FullName)'" | Write-Host
@@ -133,6 +134,7 @@ function Compile-SourceScript {
                 )
             }
             New-Item -Path $COMPILED_DIR -ItemType Directory -Force | Out-Null
+
             # Begin compilation
             if ($PSBoundParameters['SkipWrapper']) { "Compiling $($sourceFile.Name)..." | Write-Host -ForegroundColor Yellow }
             Start-Process @processArgs
@@ -153,7 +155,12 @@ function Compile-SourceScript {
                                         }
                                     }
 
-            if ($compiledDirItemsDiff) {
+            # Return if no items in the compiled directory have changed
+            if (!$compiledDirItemsDiff) {
+                "`nNo changes to plugins were found. No operations were performed." | Write-Host -ForegroundColor Magenta
+                return
+
+             }else {
                 # List successfully compiled plugins
                 "`nNewly compiled plugins:" | Write-Host -ForegroundColor Cyan
                 $compiledDirItemsDiff | % {
@@ -161,14 +168,19 @@ function Compile-SourceScript {
                     "    $($_.Name), $($_.LastWriteTime), $compiledPluginHash" | Write-Host -ForegroundColor White
                 }
 
+                # Prepare to install the plugin
                 New-Item -Path $PLUGINS_DIR -ItemType Directory -Force | Out-Null
                 $installationFailure = $false
+
                 $compiledDirItemsDiff | % {
+                    # Display info for the compiled plugin
                     "`n$($_.Name):" | Write-Host -ForegroundColor Green
                     if ($_.Basename -ne $sourceFile.Basename) {
                         "    The plugin's name does not match the specified script's name. The plugin will not copied to the plugins directory." | Write-Host -ForegroundColor Yellow
                         return  # continue in %
                     }
+
+                    # Check for an existing plugin
                     $existingPlugin = Get-Item -Path "$PLUGINS_DIR/$($_.Name)" -ErrorAction SilentlyContinue
                     if (!$existingPlugin) {
                         "    Plugin does not currently exist in the plugins directory." | Write-Host -ForegroundColor Yellow
@@ -176,6 +188,7 @@ function Compile-SourceScript {
                         $existingPluginHash = (Get-FileHash -Path $existingPlugin -Algorithm MD5).Hash
                         "    Existing: $($existingPlugin.LastWriteTime), $existingPluginHash" | Write-Host -ForegroundColor Yellow
                     }
+
                     # Display the compiled and existing plugin's file info
                     $compiledPluginHash = (Get-FileHash -Path $_.FullName -Algorithm MD5).Hash
                     "    Compiled: $($_.LastWriteTime), $compiledPluginHash" | Write-Host -ForegroundColor Green
@@ -195,12 +208,13 @@ function Compile-SourceScript {
                     if ($updatedPluginHash -eq $compiledPluginHash) { "`n    Plugin successfully copied to '$($_.Fullname)'" | Write-Host -ForegroundColor Green }
                     else { "`n    Failed to copy to the plugins directory." | Write-Host -ForegroundColor Magenta; return }
                 }
+
+                # Throw an error if the copying process failed
                 if ($installationFailure) {
-                    throw "Failed to install one or more plugins."
+                    throw "Failed to install the specified plugin."
                 }
-            }else {
-               "`nNo changes to plugins were found. No operations were performed." | Write-Host -ForegroundColor Magenta
             }
+
         }catch {
             throw
         }finally {
@@ -211,4 +225,5 @@ function Compile-SourceScript {
             "End of Compile-SourceScript." | Write-Host -ForegroundColor Cyan
         }
     }
+
 }
