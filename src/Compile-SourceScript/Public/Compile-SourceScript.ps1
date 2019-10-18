@@ -211,7 +211,7 @@ function Compile-SourceScript {
 
                 # Throw an error if the copying process failed
                 if ($installationFailure) {
-                    throw "Failed to install one or more plugins."
+                    throw "Failed to install the specified plugin."
                 }
             }
 
