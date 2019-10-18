@@ -9,7 +9,7 @@
 [badge-version-powershellgallery-releases-img]: https://img.shields.io/powershellgallery/v/Compile-SourceScript?logo=powershell&logoColor=white&label=PSGallery&labelColor=&style=flat-square
 [badge-version-powershellgallery-releases-src]: https://www.powershellgallery.com/packages/Compile-SourceScript/
 
-A PowerShell module for compiling [**SourceMod**](https://www.sourcemod.net/) [`.sp`](https://wiki.alliedmods.net/Compiling_SourceMod_Plugins) and [**AMX Mod X**](https://www.amxmodx.org/) [`.sma`](https://wiki.alliedmods.net/Compiling_Plugins_(AMX_Mod_X)) plugin source files for [**Source**](https://developer.valvesoftware.com/wiki/Source) / [**Goldsource**](https://developer.valvesoftware.com/wiki/Goldsource) games.
+A PowerShell module for compiling [**SourceMod**](https://www.sourcemod.net/) ([`.sp`](https://wiki.alliedmods.net/Compiling_SourceMod_Plugins)) and [**AMX Mod X**](https://www.amxmodx.org/) ([`.sma`](https://wiki.alliedmods.net/Compiling_Plugins_(AMX_Mod_X))) plugin source files for [**Source**](https://developer.valvesoftware.com/wiki/Source) / [**Goldsource**](https://developer.valvesoftware.com/wiki/Goldsource) games.
 
 ## Introduction
 
@@ -18,7 +18,6 @@ A PowerShell module for compiling [**SourceMod**](https://www.sourcemod.net/) [`
 ## Requirements
 
 - **Windows** with [PowerShell 4.0 or later](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-windows-powershell?view=powershell-5.1), or ***nix** with [PowerShell Core](https://github.com/powershell/powershell).
-
 
 ## Installation
 
