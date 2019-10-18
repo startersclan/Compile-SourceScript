@@ -42,6 +42,11 @@ stages:
           containerImage: joeltimothyoh/powershell:6.2.0-ubuntu-18.04-git
         6.1.0:
           containerImage: joeltimothyoh/powershell:6.1.0-ubuntu-18.04-git
+    container: $[ variables['containerImage'] ]
+    steps:
+    - checkout: self
+      submodules: recursive
+    - template: templates/azure-pipelines/linux/continuous-build.yml@PSModulePublisher
   - job: windows_powershell_5_1
     displayName: '[Windows] PowerShell 5.1'
     pool:
