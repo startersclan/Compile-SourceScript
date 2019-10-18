@@ -3,16 +3,16 @@
 A wrapper for compiling SourceMod (.sp) and AMX Mod X (.sma) plugin source files for Source / GoldSource games.
 
 .DESCRIPTION
-Specified plugins source files are compiled and copied into the respective mod's plugins directory upon success.
+Specified plugins are compiled and subsequently copied into the mod's plugins directory if found to be new or have been changed.
 
 .PARAMETER File
-Path to the plugin's .sp or .sma file.
+Path to the plugin's source file (.sp or .sma).
 
 .PARAMETER SkipWrapper
-To directly run the mod's compiler instead of using the provided wrappers (such as 'compile.exe' and 'compile.sh') in the compilation process.
+To directly run the mod's compiler instead of using provided wrappers (such as 'compile.exe' and 'compile.sh') in the compilation process.
 
 .PARAMETER Force
-Copies the newly compiled plugin to the plugins directory without user confirmation.
+Copies the newly compiled plugin to the mod's plugins directory without user confirmation.
 
 .EXAMPLE
 ./Compile-SourceScript.ps1 -File ~/servers/csgo/addons/sourcemod/scripting/plugin1.sp
@@ -23,7 +23,7 @@ Compiles the SourceMod plugin source file 'plugin1.sp', and installs the compile
 Compiles the AMX Mod X plugin source file 'plugin2.sma' without using the mod's compiler wrapper, and installs the compiled plugin without user confirmation for the game Counter-Strike 1.6.
 
 .LINK
-https://github.com/theohbrothers/Compile-SourceScript
+https://github.com/startersclan/Compile-SourceScript
 #>
 
 param(

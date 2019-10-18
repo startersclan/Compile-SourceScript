@@ -13,7 +13,7 @@ A PowerShell module for compiling [**SourceMod**](https://www.sourcemod.net/) [`
 
 ## Introduction
 
-`Compile-SourceScript` is a wrapper that eases development of each mod's plugins by first getting source files compiled into plugins, which, if found to be new or possess a differing hash, are then copied into the respective mod's `plugins` directory .
+`Compile-SourceScript` is a wrapper to ease development of each of the mod's plugins. Specified plugins are compiled and subsequently copied into the mod's `plugins` directory if found to be new or have been changed.
 
 ## Requirements
 
