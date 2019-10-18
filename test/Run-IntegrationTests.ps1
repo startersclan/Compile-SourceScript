@@ -22,7 +22,7 @@ $functionTestScriptBlock = {
 
 "`n[sourcemod] Compile plugin via wrapper" | Write-Host
 $cmdArgs = @{
-    File = '..\test\mod\sourcemod\addons\sourcemod\scripting\plugin1.sp' | Convert-Path
+    File = "$PSScriptRoot\mod\sourcemod\addons\sourcemod\scripting\plugin1.sp"
     Force = $true
 }
 $cmdArgs | Out-String -Stream | % { $_.Trim() } | ? { $_ } | Write-Verbose
@@ -31,7 +31,7 @@ $cmdArgs | Out-String -Stream | % { $_.Trim() } | ? { $_ } | Write-Verbose
 
 "`n[sourcemod] Compile plugin via compiler" | Write-Host
 $cmdArgs = @{
-    File = '..\test\mod\sourcemod\addons\sourcemod\scripting\plugin2.sp' | Convert-Path
+    File = "$PSScriptRoot\mod\sourcemod\addons\sourcemod\scripting\plugin2.sp"
     Force = $true
     SkipWrapper = $true
 }
@@ -49,7 +49,7 @@ $cmdArgs | Out-String -Stream | % { $_.Trim() } | ? { $_ } | Write-Verbose
 # - Displays all the output using 'less' at the end of the compilation, thus is limited to interactive use
 if ($env:OS) {
     $cmdArgs = @{
-        File = '..\test\mod\amxmodx\addons\amxmodx\scripting\plugin1.sma' | Convert-Path
+        File = "$PSScriptRoot\mod\amxmodx\addons\amxmodx\scripting\plugin1.sma"
         Force = $true
     }
     $cmdArgs | Out-String -Stream | % { $_.Trim() } | ? { $_ } | Write-Verbose
@@ -58,7 +58,7 @@ if ($env:OS) {
 
 "`n[amxmodx] Compile plugin via compiler" | Write-Host
 $cmdArgs = @{
-    File = '..\test\mod\amxmodx\addons\amxmodx\scripting\plugin2.sma' | Convert-Path
+    File = "$PSScriptRoot\mod\amxmodx\addons\amxmodx\scripting\plugin2.sma"
     Force = $true
     SkipWrapper = $true
 }
