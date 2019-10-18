@@ -41,68 +41,73 @@ function Compile-SourceScript {
     )
 
     begin {
-        $ErrorActionPreference = 'Stop'
-        "Starting Compile-SourceScript" | Write-Host -ForegroundColor Cyan
+        try {
+            $ErrorActionPreference = 'Stop'
+            "Starting Compile-SourceScript" | Write-Host -ForegroundColor Cyan
 
-        # Verify the specified item's type and extension
-        $sourceFile = Get-Item -Path $PSBoundParameters['File']
-        if (!(Test-Path -Path $sourceFile.FullName -PathType Leaf)) {
-            throw "The item is not a file."
-        }
-        $MOD_NAME = if ($sourceFile.Extension -eq '.sp') { 'sourcemod' }
-                    elseif ($sourceFile.Extension -eq '.sma') { 'amxmodx' }
-        if (!$MOD_NAME) {
-            throw "File is not a '.sp' or '.sma' source file."
-        }
+            # Verify the specified item's type and extension
+            $sourceFile = Get-Item -Path $PSBoundParameters['File']
+            if (!(Test-Path -Path $sourceFile.FullName -PathType Leaf)) {
+                throw "The item is not a file."
+            }
+            $MOD_NAME = if ($sourceFile.Extension -eq '.sp') { 'sourcemod' }
+                        elseif ($sourceFile.Extension -eq '.sma') { 'amxmodx' }
+            if (!$MOD_NAME) {
+                throw "File is not a '.sp' or '.sma' source file."
+            }
 
-        # Initialize variables
-        $MOD = @{
-            sourcemod = @{
-                script_ext = '.sp'
-                plugin_ext = '.smx'
-                compiled_dir_name = 'compiled'
-                plugins_dir_name = 'plugins'
-                compiler = @{
-                    windows = @{
-                        wrapper = 'compile.exe'
-                        bin = 'spcomp.exe'
+            # Initialize variables
+            $MOD = @{
+                sourcemod = @{
+                    script_ext = '.sp'
+                    plugin_ext = '.smx'
+                    compiled_dir_name = 'compiled'
+                    plugins_dir_name = 'plugins'
+                    compiler = @{
+                        windows = @{
+                            wrapper = 'compile.exe'
+                            bin = 'spcomp.exe'
+                        }
+                        others = @{
+                            wrapper = 'compile.sh'
+                            bin = 'spcomp'
+                        }
                     }
-                    others = @{
-                        wrapper = 'compile.sh'
-                        bin = 'spcomp'
+                }
+                amxmodx = @{
+                    script_ext = '.sma'
+                    plugin_ext = '.amxx'
+                    compiled_dir_name = 'compiled'
+                    plugins_dir_name = 'plugins'
+                    compiler = @{
+                        windows = @{
+                            wrapper = 'compile.exe'
+                            bin = 'amxxpc.exe'
+                        }
+                        others = @{
+                            wrapper = 'compile.sh'
+                            bin = 'amxxpc'
+                        }
                     }
                 }
             }
-            amxmodx = @{
-                script_ext = '.sma'
-                plugin_ext = '.amxx'
-                compiled_dir_name = 'compiled'
-                plugins_dir_name = 'plugins'
-                compiler = @{
-                    windows = @{
-                        wrapper = 'compile.exe'
-                        bin = 'amxxpc.exe'
-                    }
-                    others = @{
-                        wrapper = 'compile.sh'
-                        bin = 'amxxpc'
-                    }
-                }
+            $COMPILER_NAME = if ($env:OS) {
+                if ($PSBoundParameters['SkipWrapper']) { $MOD[$MOD_NAME]['compiler']['windows']['bin'] }
+                else { $MOD[$MOD_NAME]['compiler']['windows']['wrapper'] }
+            }else {
+                if ($PSBoundParameters['SkipWrapper']) { $MOD[$MOD_NAME]['compiler']['others']['bin'] }
+                else { $MOD[$MOD_NAME]['compiler']['others']['wrapper'] }
             }
-        }
-        $COMPILER_NAME = if ($env:OS) {
-            if ($PSBoundParameters['SkipWrapper']) { $MOD[$MOD_NAME]['compiler']['windows']['bin'] }
-            else { $MOD[$MOD_NAME]['compiler']['windows']['wrapper'] }
-        }else {
-            if ($PSBoundParameters['SkipWrapper']) { $MOD[$MOD_NAME]['compiler']['others']['bin'] }
-            else { $MOD[$MOD_NAME]['compiler']['others']['wrapper'] }
-        }
-        $SCRIPTING_DIR = $sourceFile.DirectoryName
-        $COMPILED_DIR = Join-Path $SCRIPTING_DIR $MOD[$MOD_NAME]['compiled_dir_name']
-        $PLUGINS_DIR = Join-Path (Split-Path $SCRIPTING_DIR -Parent) $MOD[$MOD_NAME]['plugins_dir_name']
+            $SCRIPTING_DIR = $sourceFile.DirectoryName
+            $COMPILED_DIR = Join-Path $SCRIPTING_DIR $MOD[$MOD_NAME]['compiled_dir_name']
+            $PLUGINS_DIR = Join-Path (Split-Path $SCRIPTING_DIR -Parent) $MOD[$MOD_NAME]['plugins_dir_name']
 
-        # Verify the presence of the compiler item
-        $compiler = Get-Item -Path (Join-Path $SCRIPTING_DIR $COMPILER_NAME)
+            # Verify the presence of the compiler item
+            $compiler = Get-Item -Path (Join-Path $SCRIPTING_DIR $COMPILER_NAME)
+
+        }catch {
+            Write-Error -Exception $_.Exception -Message $_.Exception.Message -Category $_.CategoryInfo.Category -TargetObject $_.TargetObject
+        }
 
     }process {
         try {
@@ -216,7 +221,7 @@ function Compile-SourceScript {
             }
 
         }catch {
-            throw
+            Write-Error -Exception $_.Exception -Message $_.Exception.Message -Category $_.CategoryInfo.Category -TargetObject $_.TargetObject
         }finally {
             # Cleanup
             if ($stdInFile) {
