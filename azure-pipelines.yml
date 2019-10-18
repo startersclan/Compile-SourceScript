@@ -71,9 +71,10 @@ stages:
     displayName: '[Linux] [Container] PowerShell Core'
     pool:
       vmImage: ubuntu-16.04
-    container: joeltimothyoh/powershell:6.1.0-ubuntu-18.04-git
+    container: joeltimothyoh/powershell:6.1.0-ubuntu-18.04-git-sudo
     steps:
     - checkout: self
       submodules: recursive
+    - template: templates/azure-pipelines/linux/continuous-build.yml@PSModulePublisher
     - template: templates/azure-pipelines/linux/publish.yml@PSModulePublisher
     - template: templates/azure-pipelines/pwsh/release.yml@PSRepositoryReleaseManager
