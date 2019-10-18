@@ -19,29 +19,59 @@ A PowerShell module for compiling [**SourceMod**](https://www.sourcemod.net/) [`
 
 - **Windows** with [PowerShell 4.0 or later](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-windows-powershell?view=powershell-5.1), or ***nix** with [PowerShell Core](https://github.com/powershell/powershell).
 
+
+## Installation
+
+First, ensure [`PSGallery`](https://www.powershellgallery.com/) is registered as a PowerShell repository:
+
+```powershell
+Register-PSRepository -Default -Verbose
+```
+
+To install the module:
+
+```powershell
+# Latest, for the current user
+Install-Module -Name Compile-SourceScript -Repository PSGallery -Scope CurrentUser -Verbose
+
+# Specific version, for the current user
+Install-Module -Name Compile-SourceScript -Repository PSGallery -RequiredVersion x.x.x -Scope CurrentUser -Verbose
+
+# Latest, for all users
+Install-Module -Name Compile-SourceScript -Repository PSGallery -Scope AllUsers -Verbose
+```
+
 ## Usage
 
-`Compile-SourceScript` may be used as a script or a module.
+### Functions
 
-### Examples
+```powershell
+Compile-SourceScript [[-File] <Object>] [-SkipWrapper] [-Force] [<CommonParameters>]
+```
 
-Compiles the **SourceMod** plugin source file `plugin1.sp`, and installs the compiled plugin with user confirmation for the game Counter-Strike: Global Offensive.
+#### Example 1
+
+Compiles the *SourceMod* plugin source file `plugin1.sp`, and installs the compiled plugin with user confirmation for the game *Counter-Strike: Global Offensive*.
 
 ```powershell
 Compile-SourceScript -File ~/servers/csgo/addons/sourcemod/scripting/plugin1.sp
 ```
 
-Compiles the **AMX Mod X** plugin source file `plugin2.sma` *without* using the mod's compiler wrapper, and installs the compiled plugin *without* user confirmation for the game Counter-Strike 1.6.
+#### Example 2
+
+Compiles the *AMX Mod X* plugin source file `plugin2.sma` *without* using the mod's compiler wrapper, and installs the compiled plugin *without* user confirmation for the game *Counter-Strike 1.6*.
 
 ```powershell
 Compile-SourceScript -File ~/servers/cstrike/addons/amxmodx/scripting/plugin2.sma -SkipWrapper -Force
 ```
 
+### Script
+
+The script version of `Compile-SourceScript` is also provided and can be found [here](src/script/Compile-SourceScript.ps1).
+
 ### VSCode
 
-[Build Tasks](https://code.visualstudio.com/docs/editor/tasks#vscode) can be utilized to ease development of plugins from within the code editor.
-
-A sample tasks file can be found [here](docs/samples/.vscode/tasks.json.sample).
+`Compile-SourceScript` can be invoked via [Build Tasks](https://code.visualstudio.com/docs/editor/tasks#vscode) in **VSCode**. A sample tasks file can be found [here](docs/samples/.vscode/tasks.json.sample).
 
 ## Administration
 
