@@ -5,6 +5,7 @@ function Compile-SourceScript {
 
     .DESCRIPTION
     Specified plugins are compiled and subsequently copied into the mod's plugins directory if found to be new or have been changed.
+
     .PARAMETER File
     Path to the plugin's source file (.sp or .sma).
 
