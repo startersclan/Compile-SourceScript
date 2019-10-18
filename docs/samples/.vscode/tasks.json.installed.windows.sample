@@ -2,7 +2,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Compile-SourceScript (pwsh)",
+            "label": "[pwsh] Compile-SourceScript",
             "type": "process",
             "command": "pwsh",
             "args": [
@@ -12,13 +12,26 @@
                 "${file}",
                 "-Force"
             ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+            "group": "build",
+            "problemMatcher": []
         },
         {
-            "label": "Compile-SourceScript (powershell)",
+            "label": "[pwsh] Compile-SourceScript -SkipWrapper",
+            "type": "process",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Compile-SourceScript",
+                "-File",
+                "${file}",
+                "-SkipWrapper",
+                "-Force"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "[powershell] Compile-SourceScript",
             "type": "process",
             "command": "powershell",
             "args": [
@@ -28,33 +41,23 @@
                 "${file}",
                 "-Force"
             ],
-            "group": "build"
+            "group": "build",
+            "problemMatcher": []
         },
         {
-            "label": "Compile-SourceScript.ps1 (pwsh)",
-            "type": "process",
-            "command": "pwsh",
-            "args": [
-                "-Command",
-                "D:/path/to/Compile-SourceScript/src/script/Compile-SourceScript.ps1",
-                "-File",
-                "${file}",
-                "-Force"
-            ],
-            "group": "build"
-        },
-        {
-            "label": "Compile-SourceScript.ps1 (powershell)",
+            "label": "[powershell] Compile-SourceScript -SkipWrapper",
             "type": "process",
             "command": "powershell",
             "args": [
                 "-Command",
-                "D:/path/to/Compile-SourceScript/src/script/Compile-SourceScript.ps1",
+                "Compile-SourceScript",
                 "-File",
                 "${file}",
+                "-SkipWrapper",
                 "-Force"
             ],
-            "group": "build"
+            "group": "build",
+            "problemMatcher": []
         }
     ]
 }
