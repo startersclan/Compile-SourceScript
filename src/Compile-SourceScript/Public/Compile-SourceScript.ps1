@@ -134,6 +134,7 @@ function Compile-SourceScript {
                 )
             }
             New-Item -Path $COMPILED_DIR -ItemType Directory -Force | Out-Null
+
             # Begin compilation
             if ($PSBoundParameters['SkipWrapper']) { "Compiling $($sourceFile.Name)..." | Write-Host -ForegroundColor Yellow }
             Start-Process @processArgs
@@ -164,12 +165,17 @@ function Compile-SourceScript {
 
                 New-Item -Path $PLUGINS_DIR -ItemType Directory -Force | Out-Null
                 $installationFailure = $false
+
                 $compiledDirItemsDiff | % {
+
+                    # Display info for the compiled plugin
                     "`n$($_.Name):" | Write-Host -ForegroundColor Green
                     if ($_.Basename -ne $sourceFile.Basename) {
                         "    The plugin's name does not match the specified script's name. The plugin will not copied to the plugins directory." | Write-Host -ForegroundColor Yellow
                         return  # continue in %
                     }
+
+                    # Check for an existing plugin
                     $existingPlugin = Get-Item -Path "$PLUGINS_DIR/$($_.Name)" -ErrorAction SilentlyContinue
                     if (!$existingPlugin) {
                         "    Plugin does not currently exist in the plugins directory." | Write-Host -ForegroundColor Yellow
@@ -177,6 +183,7 @@ function Compile-SourceScript {
                         $existingPluginHash = (Get-FileHash -Path $existingPlugin -Algorithm MD5).Hash
                         "    Existing: $($existingPlugin.LastWriteTime), $existingPluginHash" | Write-Host -ForegroundColor Yellow
                     }
+
                     # Display the compiled and existing plugin's file info
                     $compiledPluginHash = (Get-FileHash -Path $_.FullName -Algorithm MD5).Hash
                     "    Compiled: $($_.LastWriteTime), $compiledPluginHash" | Write-Host -ForegroundColor Green
@@ -196,6 +203,8 @@ function Compile-SourceScript {
                     if ($updatedPluginHash -eq $compiledPluginHash) { "`n    Plugin successfully copied to '$($_.Fullname)'" | Write-Host -ForegroundColor Green }
                     else { "`n    Failed to copy to the plugins directory." | Write-Host -ForegroundColor Magenta; return }
                 }
+
+                # Throw an error if the copying process failed
                 if ($installationFailure) {
                     throw "Failed to install one or more plugins."
                 }
@@ -212,4 +221,5 @@ function Compile-SourceScript {
             "End of Compile-SourceScript." | Write-Host -ForegroundColor Cyan
         }
     }
+
 }
