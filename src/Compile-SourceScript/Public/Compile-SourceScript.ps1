@@ -155,7 +155,12 @@ function Compile-SourceScript {
                                         }
                                     }
 
-            if ($compiledDirItemsDiff) {
+            # Return if no items in the compiled directory have changed
+            if (!$compiledDirItemsDiff) {
+                "`nNo changes to plugins were found. No operations were performed." | Write-Host -ForegroundColor Magenta
+                return
+
+             }else {
                 # List successfully compiled plugins
                 "`nNewly compiled plugins:" | Write-Host -ForegroundColor Cyan
                 $compiledDirItemsDiff | % {
@@ -163,11 +168,11 @@ function Compile-SourceScript {
                     "    $($_.Name), $($_.LastWriteTime), $compiledPluginHash" | Write-Host -ForegroundColor White
                 }
 
+                # Prepare to install the plugin
                 New-Item -Path $PLUGINS_DIR -ItemType Directory -Force | Out-Null
                 $installationFailure = $false
 
                 $compiledDirItemsDiff | % {
-
                     # Display info for the compiled plugin
                     "`n$($_.Name):" | Write-Host -ForegroundColor Green
                     if ($_.Basename -ne $sourceFile.Basename) {
@@ -208,9 +213,8 @@ function Compile-SourceScript {
                 if ($installationFailure) {
                     throw "Failed to install one or more plugins."
                 }
-            }else {
-               "`nNo changes to plugins were found. No operations were performed." | Write-Host -ForegroundColor Magenta
             }
+
         }catch {
             throw
         }finally {
