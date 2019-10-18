@@ -81,7 +81,7 @@ stages:
   dependsOn: publish
   jobs:
   - job: linux_container
-    displayName: '[Linux] [Container] PowerShell Core'
+    displayName: '[Linux] [Container]'
     pool:
       vmImage: ubuntu-16.04
     container: joeltimothyoh/powershell:6.1.0-ubuntu-18.04-git-sudo
