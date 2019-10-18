@@ -7,9 +7,9 @@
     RootModule = 'Compile-SourceScript.psm1'
     # ModuleVersion = ''                            # Value will be set for each publication based on the tag ref. Defaults to '0.0.0' in development environments and regular CI builds
     GUID = 'b3189849-465b-472a-a85f-f04d8b27dfa0'
-    Author = 'The Oh Brothers'
-    CompanyName = 'The Oh Brothers'
-    Copyright = '(c) 2019 The Oh Brothers'
+    Author = 'Starters Clan'
+    CompanyName = 'Starters Clan'
+    Copyright = '(c) 2019 Starters Clan'
     Description = 'A wrapper for compiling SourceMod (.sp) and AMX Mod X (.sma) plugin source files for Source / GoldSource games.'
     PowerShellVersion = '4.0'
     # PowerShellHostName = ''
