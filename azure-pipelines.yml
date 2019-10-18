@@ -63,9 +63,22 @@ stages:
     - checkout: self
       submodules: recursive
     - template: templates/azure-pipelines/windows/powershell/continuous-build.yml@PSModulePublisher
-- stage: publish_release
-  displayName: Publish, Release
+- stage: publish
+  displayName: Publish
   dependsOn: build_test
+  jobs:
+  - job: windows_pwsh
+    displayName: '[Windows] PowerShell Core'
+    pool:
+      vmImage: windows-2019
+    steps:
+    - checkout: self
+      submodules: recursive
+    - template: templates/azure-pipelines/windows/pwsh/continuous-build.yml@PSModulePublisher
+    - template: templates/azure-pipelines/windows/pwsh/publish.yml@PSModulePublisher
+- stage: release
+  displayName: Release
+  dependsOn: publish
   jobs:
   - job: linux_container
     displayName: '[Linux] [Container] PowerShell Core'
@@ -75,6 +88,4 @@ stages:
     steps:
     - checkout: self
       submodules: recursive
-    - template: templates/azure-pipelines/linux/continuous-build.yml@PSModulePublisher
-    - template: templates/azure-pipelines/linux/publish.yml@PSModulePublisher
     - template: templates/azure-pipelines/pwsh/release.yml@PSRepositoryReleaseManager
