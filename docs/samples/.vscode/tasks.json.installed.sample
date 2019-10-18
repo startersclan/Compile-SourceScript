@@ -2,7 +2,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Compile-SourceScript (pwsh)",
+            "label": "[pwsh] Compile-SourceScript",
             "type": "process",
             "command": "pwsh",
             "args": [
@@ -12,23 +12,23 @@
                 "${file}",
                 "-Force"
             ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+            "group": "build",
+            "problemMatcher": []
         },
         {
-            "label": "Compile-SourceScript (powershell)",
+            "label": "[pwsh] Compile-SourceScript -SkipWrapper",
             "type": "process",
-            "command": "powershell",
+            "command": "pwsh",
             "args": [
                 "-Command",
                 "Compile-SourceScript",
                 "-File",
                 "${file}",
+                "-SkipWrapper",
                 "-Force"
             ],
-            "group": "build"
+            "group": "build",
+            "problemMatcher": []
         }
     ]
 }

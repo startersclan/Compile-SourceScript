@@ -1,0 +1,34 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "[pwsh] Compile-SourceScript",
+            "type": "process",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Import-Module ~/path/to/Compile-SourceScript/src/Compile-SourceScript/Compile-SourceScript.psm1; Compile-SourceScript",
+                "-File",
+                "${file}",
+                "-Force"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "[pwsh] Compile-SourceScript -SkipWrapper",
+            "type": "process",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Import-Module C:/path/to/Compile-SourceScript/src/Compile-SourceScript/Compile-SourceScript.psm1; Compile-SourceScript",
+                "-File",
+                "${file}",
+                "-SkipWrapper",
+                "-Force"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        }
+    ]
+}

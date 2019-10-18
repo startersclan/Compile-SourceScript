@@ -1,0 +1,63 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "[pwsh] Compile-SourceScript",
+            "type": "process",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Compile-SourceScript",
+                "-File",
+                "${file}",
+                "-Force"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "[pwsh] Compile-SourceScript -SkipWrapper",
+            "type": "process",
+            "command": "pwsh",
+            "args": [
+                "-Command",
+                "Compile-SourceScript",
+                "-File",
+                "${file}",
+                "-SkipWrapper",
+                "-Force"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "[powershell] Compile-SourceScript",
+            "type": "process",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                "Compile-SourceScript",
+                "-File",
+                "${file}",
+                "-Force"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "[powershell] Compile-SourceScript -SkipWrapper",
+            "type": "process",
+            "command": "powershell",
+            "args": [
+                "-Command",
+                "Compile-SourceScript",
+                "-File",
+                "${file}",
+                "-SkipWrapper",
+                "-Force"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        }
+    ]
+}
