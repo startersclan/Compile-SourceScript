@@ -26,6 +26,9 @@ try {
         $testFailed = $true
     }
 
+    "Listing test artifacts" | Write-Host
+    git ls-files --others --exclude-standard $PSScriptRoot
+
     "End of tests" | Write-Host
     if ($testFailed) {
         throw "One or more tests failed."
