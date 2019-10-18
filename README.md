@@ -66,7 +66,7 @@ Compile-SourceScript -File ~/servers/cstrike/addons/amxmodx/scripting/plugin2.sm
 
 ### VSCode
 
-`Compile-SourceScript` can be invoked via [Build Tasks](https://code.visualstudio.com/docs/editor/tasks#vscode) in **VSCode**. A sample tasks file can be found [here](docs/samples/.vscode/tasks.json.sample).
+`Compile-SourceScript` can be invoked via [Build Tasks](https://code.visualstudio.com/docs/editor/tasks#vscode) in **VSCode**. A sample tasks file can be found [here](docs/samples/.vscode/tasks.sample.json).
 
 ## Administration
 
