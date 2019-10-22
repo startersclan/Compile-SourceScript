@@ -107,7 +107,7 @@ function Compile-SourceScript {
             $PLUGINS_DIR = Join-Path (Split-Path $SCRIPTING_DIR -Parent) $MOD[$MOD_NAME]['plugins_dir_name']
 
             # Verify the presence of the compiler item
-            $compiler = Get-Item -Path $COMPILED_DIR -ErrorAction SilentlyContinue
+            $compiler = Get-Item -Path $COMPILER_PATH -ErrorAction SilentlyContinue
             if (!$compiler) {
                 throw "Cannot find the plugin compiler at the path '$COMPILER_PATH'."
             }
