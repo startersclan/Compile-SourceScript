@@ -21,7 +21,7 @@ resources:
     type: github
     name: theohbrothers/PSRepositoryReleaseManager
     endpoint: startersclan
-    ref: refs/tags/v0.2.1
+    ref: refs/tags/v0.3.0
 
 stages:
 - stage: build_test
