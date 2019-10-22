@@ -1,7 +1,7 @@
 function Compile-SourceScript {
     <#
     .SYNOPSIS
-    A wrapper for compiling SourceMod (.sp) and AMX Mod X (.sma) plugin source files for Source / GoldSource games.
+    A wrapper for compiling SourceMod (.sp) and AMX Mod X (.sma) plugin source files for Source / Goldsource games.
 
     .DESCRIPTION
     Specified plugins are compiled and subsequently copied into the mod's plugins directory if found to be new or have been changed.
@@ -55,6 +55,9 @@ function Compile-SourceScript {
             if (!$MOD_NAME) {
                 throw "File is not a '.sp' or '.sma' source file."
             }
+            if (!($sourceFile.DirectoryName | Split-Path)) {
+                throw "The directory 'addons/$MOD_NAME/' cannot exist relative to the specified plugin source file '$($sourceFile.FullName)'."
+            }
 
             # Initialize variables
             $MOD = @{
@@ -100,10 +103,14 @@ function Compile-SourceScript {
             }
             $SCRIPTING_DIR = $sourceFile.DirectoryName
             $COMPILED_DIR = Join-Path $SCRIPTING_DIR $MOD[$MOD_NAME]['compiled_dir_name']
+            $COMPILER_PATH = Join-Path $SCRIPTING_DIR $COMPILER_NAME
             $PLUGINS_DIR = Join-Path (Split-Path $SCRIPTING_DIR -Parent) $MOD[$MOD_NAME]['plugins_dir_name']
 
             # Verify the presence of the compiler item
-            $compiler = Get-Item -Path (Join-Path $SCRIPTING_DIR $COMPILER_NAME)
+            $compiler = Get-Item -Path $COMPILER_PATH -ErrorAction SilentlyContinue
+            if (!$compiler) {
+                throw "Cannot find the plugin compiler at the path '$COMPILER_PATH'."
+            }
 
         }catch {
             Write-Error -Exception $_.Exception -Message $_.Exception.Message -Category $_.CategoryInfo.Category -TargetObject $_.TargetObject
@@ -165,7 +172,7 @@ function Compile-SourceScript {
                 "`nNo changes to plugins were found. No operations were performed." | Write-Host -ForegroundColor Magenta
                 return
 
-             }else {
+            }else {
                 # List successfully compiled plugins
                 "`nNewly compiled plugins:" | Write-Host -ForegroundColor Cyan
                 $compiledDirItemsDiff | % {
