@@ -55,6 +55,9 @@ function Compile-SourceScript {
             if (!$MOD_NAME) {
                 throw "File is not a '.sp' or '.sma' source file."
             }
+            if (!($sourceFile.DirectoryName | Split-Path)) {
+                throw "The directory 'addons/$MOD_NAME/' cannot exist relative to the specified plugin source file '$($sourceFile.FullName)'."
+            }
 
             # Initialize variables
             $MOD = @{
