@@ -1,7 +1,7 @@
 function Compile-SourceScript {
     <#
     .SYNOPSIS
-    A wrapper for compiling SourceMod (.sp) and AMX Mod X (.sma) plugin source files for Source / GoldSource games.
+    A wrapper for compiling SourceMod (.sp) and AMX Mod X (.sma) plugin source files for Source / Goldsource games.
 
     .DESCRIPTION
     Specified plugins are compiled and subsequently copied into the mod's plugins directory if found to be new or have been changed.
@@ -165,7 +165,7 @@ function Compile-SourceScript {
                 "`nNo changes to plugins were found. No operations were performed." | Write-Host -ForegroundColor Magenta
                 return
 
-             }else {
+            }else {
                 # List successfully compiled plugins
                 "`nNewly compiled plugins:" | Write-Host -ForegroundColor Cyan
                 $compiledDirItemsDiff | % {

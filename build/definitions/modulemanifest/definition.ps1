@@ -10,7 +10,7 @@
     Author = 'Starters Clan'
     CompanyName = 'Starters Clan'
     Copyright = '(c) 2019 Starters Clan'
-    Description = 'A wrapper for compiling SourceMod (.sp) and AMX Mod X (.sma) plugin source files for Source / GoldSource games.'
+    Description = 'A wrapper for compiling SourceMod (.sp) and AMX Mod X (.sma) plugin source files for Source / Goldsource games.'
     PowerShellVersion = '4.0'
     # PowerShellHostName = ''
     # PowerShellHostVersion = ''
