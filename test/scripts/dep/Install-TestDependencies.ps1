@@ -16,34 +16,34 @@ try {
     }
     Get-Module Pester -ListAvailable
 
-    Set-StrictMode -Off
-    if ($IsLinux) {
-        "Installing dependencies for linux" | Write-Host
+    if ($PSVersionTable.PSEdition -ne 'Desktop') {
+        if ($IsLinux) {
+            "Installing dependencies for linux" | Write-Host
 
-        # Provisioning script block
-        $provisionScriptBlock = {
-            $sudo = sh -c 'command -v sudo'
-            $shellBin = sh -c 'command -v bash || command -v sh'
-            $sudo | Write-Host
-            $shellBin | Write-Host
-            "Shell command:" | Write-Verbose
-            $script:shellArgs | Write-Verbose
-            if ($sudo) {
-                'Executing command with sudo' | Write-Host
-                & $sudo $shellBin @script:shellArgs | Write-Host
-            }else {
-                & $shellBin @script:shellArgs | Write-Host
+            # Provisioning script block
+            $provisionScriptBlock = {
+                $sudo = sh -c 'command -v sudo'
+                $shellBin = sh -c 'command -v bash || command -v sh'
+                $sudo | Write-Host
+                $shellBin | Write-Host
+                "Shell command:" | Write-Verbose
+                $script:shellArgs | Write-Verbose
+                if ($sudo) {
+                    'Executing command with sudo' | Write-Host
+                    & $sudo $shellBin @script:shellArgs | Write-Host
+                }else {
+                    & $shellBin @script:shellArgs | Write-Host
+                }
+                if ($LASTEXITCODE) { throw "An error occurred." }
             }
-            if ($LASTEXITCODE) { throw "An error occurred." }
-        }
 
-        # Install linux dependencies
-        $shellArgs = @(
-            'linux/sourcepawn-dependencies.sh'
-        )
-        & $provisionScriptBlock
+            # Install linux dependencies
+            $shellArgs = @(
+                'linux/sourcepawn-dependencies.sh'
+            )
+            & $provisionScriptBlock
+        }
     }
-    Set-StrictMode -Version Latest
 
 }catch {
     throw
