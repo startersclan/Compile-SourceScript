@@ -16,7 +16,7 @@ try {
     }
     Get-Module Pester -ListAvailable
 
-    if ($PSVersionTable.PSEdition -ne 'Desktop') {
+    if ($env:OS -ne 'Windows_NT') {
         if ($IsLinux) {
             "Installing dependencies for linux" | Write-Host
 
