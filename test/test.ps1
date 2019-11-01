@@ -6,6 +6,8 @@ $VerbosePreference = 'Continue'
 $global:PesterDebugPreference_ShowFullErrors = $true
 
 try {
+    Push-Location $PSScriptRoot
+
     # Install test dependencies
     "Installing test dependencies" | Write-Host
     & "$PSScriptRoot\scripts\dep\Install-TestDependencies.ps1" > $null
@@ -27,7 +29,7 @@ try {
     }
 
     "Listing test artifacts" | Write-Host
-    git ls-files --others --exclude-standard $PSScriptRoot
+    git ls-files --others --exclude-standard
 
     "End of tests" | Write-Host
     if ($testFailed) {
@@ -35,4 +37,6 @@ try {
     }
 }catch {
     throw
+}finally {
+    Pop-Location
 }

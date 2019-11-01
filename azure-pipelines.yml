@@ -17,12 +17,12 @@ resources:
     type: github
     name: theohbrothers/PSModulePublisher
     endpoint: startersclan                   # Check for your 'Type: Github' connection under 'Project Settings' > 'Service connections'
-    ref: refs/tags/v0.2.1
+    ref: refs/tags/v0.3.2
   - repository: PSRepositoryReleaseManager
     type: github
     name: theohbrothers/PSRepositoryReleaseManager
     endpoint: startersclan
-    ref: refs/tags/v0.3.0
+    ref: refs/tags/v0.4.4
 
 stages:
 - stage: build_test
@@ -35,11 +35,11 @@ stages:
     steps:
     - checkout: self
       submodules: recursive
-    - template: templates/azure-pipelines/windows/pwsh/continuous-build.yml@PSModulePublisher
+    - template: templates/azure-pipelines/entrypoint/windows/continuous-build.yml@PSModulePublisher
   - job: linux_container
     displayName: '[Linux] [Container] PowerShell'
     pool:
-      vmImage: ubuntu-16.04
+      vmImage: ubuntu-18.04
     strategy:
       matrix:
         6.2.0:
@@ -50,7 +50,7 @@ stages:
     steps:
     - checkout: self
       submodules: recursive
-    - template: templates/azure-pipelines/linux/continuous-build.yml@PSModulePublisher
+    - template: templates/azure-pipelines/entrypoint/linux/continuous-build.yml@PSModulePublisher
   - job: windows_powershell_5_1
     displayName: '[Windows] PowerShell 5.1'
     pool:
@@ -58,7 +58,7 @@ stages:
     steps:
     - checkout: self
       submodules: recursive
-    - template: templates/azure-pipelines/windows/powershell/continuous-build.yml@PSModulePublisher
+    - template: templates/azure-pipelines/entrypoint/windows/powershell/continuous-build.yml@PSModulePublisher
   - job: windows_powershell_5_0
     displayName: '[Windows] PowerShell 5.0'
     pool:
@@ -66,7 +66,7 @@ stages:
     steps:
     - checkout: self
       submodules: recursive
-    - template: templates/azure-pipelines/windows/powershell/continuous-build.yml@PSModulePublisher
+    - template: templates/azure-pipelines/entrypoint/windows/powershell/continuous-build.yml@PSModulePublisher
 - stage: publish
   displayName: Publish
   dependsOn: build_test
@@ -78,18 +78,19 @@ stages:
     steps:
     - checkout: self
       submodules: recursive
-    - template: templates/azure-pipelines/windows/pwsh/continuous-build.yml@PSModulePublisher
-    - template: templates/azure-pipelines/windows/pwsh/publish.yml@PSModulePublisher
+    - template: templates/azure-pipelines/entrypoint/windows/continuous-build.yml@PSModulePublisher
+    - template: templates/azure-pipelines/entrypoint/windows/publish.yml@PSModulePublisher
 - stage: release
   displayName: Release
   dependsOn: publish
   jobs:
   - job: linux_container
-    displayName: '[Linux] [Container]'
+    displayName: '[Linux] [Container] PowerShell Core'
     pool:
-      vmImage: ubuntu-16.04
-    container: joeltimothyoh/powershell:6.1.0-ubuntu-18.04-git-sudo
+      vmImage: ubuntu-18.04
+    container: joeltimothyoh/powershell:6.1.0-ubuntu-18.04-git
     steps:
     - checkout: self
       submodules: recursive
-    - template: templates/azure-pipelines/pwsh/release.yml@PSRepositoryReleaseManager
+    - template: templates/azure-pipelines/entrypoint/generate.yml@PSRepositoryReleaseManager
+    - template: templates/azure-pipelines/entrypoint/release.yml@PSRepositoryReleaseManager

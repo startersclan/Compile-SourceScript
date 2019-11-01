@@ -6,15 +6,23 @@ $VerbosePreference = 'Continue'
 
 $failedCount = 0
 
-"Function: Compile-SourceScript" | Write-Host
 $functionTestScriptBlock = {
     try {
-        Compile-SourceScript @cmdArgs
+        "Command: $script:cmd" | Write-Verbose
+        "Args:" | Write-Verbose
+        $script:cmdArgs | Out-String -Stream | % { $_.Trim() } | ? { $_ } | Write-Verbose
+        for ($i=0; $i -le $iterations-1; $i++) {
+            "Iteration: $($i+1)" | Write-Host
+            & $script:cmd @cmdArgs
+        }
     }catch {
         $_ | Write-Error
         $script:failedCount++
     }
 }
+
+# Function: Compile-SourceScript
+$cmd = "Compile-SourceScript"
 
 #############
 # SourceMod #
@@ -25,8 +33,8 @@ $cmdArgs = @{
     File = "$PSScriptRoot\..\..\mod\sourcemod\addons\sourcemod\scripting\plugin1.sp"
     Force = $true
 }
-$cmdArgs | Out-String -Stream | % { $_.Trim() } | ? { $_ } | Write-Verbose
-1..2 | % { "Iteration: $_" | Write-Host; & $functionTestScriptBlock }
+$iterations = 2
+& $functionTestScriptBlock
 
 
 "`n[sourcemod] Compile plugin via compiler" | Write-Host
@@ -35,8 +43,8 @@ $cmdArgs = @{
     Force = $true
     SkipWrapper = $true
 }
-$cmdArgs | Out-String -Stream | % { $_.Trim() } | ? { $_ } | Write-Verbose
-1..2 | % { "Iteration: $_" | Write-Host; & $functionTestScriptBlock }
+$iterations = 2
+& $functionTestScriptBlock
 
 
 #############
@@ -52,8 +60,8 @@ if ($env:OS) {
         File = "$PSScriptRoot\..\..\mod\amxmodx\addons\amxmodx\scripting\plugin1.sma"
         Force = $true
     }
-    $cmdArgs | Out-String -Stream | % { $_.Trim() } | ? { $_ } | Write-Verbose
-    1..2 | % { "Iteration: $_" | Write-Host; & $functionTestScriptBlock }
+    $iterations = 2
+    & $functionTestScriptBlock
 }else { "Skipping: Test only applicable to Windows." | Write-Host }
 
 "`n[amxmodx] Compile plugin via compiler" | Write-Host
@@ -62,8 +70,8 @@ $cmdArgs = @{
     Force = $true
     SkipWrapper = $true
 }
-$cmdArgs | Out-String -Stream | % { $_.Trim() } | ? { $_ } | Write-Verbose
-1..2 | % { "Iteration: $_" | Write-Host; & $functionTestScriptBlock }
+$iterations = 2
+& $functionTestScriptBlock
 
 
 ###########
