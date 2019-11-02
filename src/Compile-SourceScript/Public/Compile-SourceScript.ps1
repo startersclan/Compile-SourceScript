@@ -94,7 +94,7 @@ function Compile-SourceScript {
                     }
                 }
             }
-            $COMPILER_NAME = if ($env:OS) {
+            $COMPILER_NAME = if ($env:OS -eq 'Windows_NT') {
                 if ($PSBoundParameters['SkipWrapper']) { $MOD[$MOD_NAME]['compiler']['windows']['bin'] }
                 else { $MOD[$MOD_NAME]['compiler']['windows']['wrapper'] }
             }else {
