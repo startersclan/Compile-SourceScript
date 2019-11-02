@@ -31,7 +31,7 @@ function Compile-SourceScript {
     param(
         [Parameter(Mandatory=$True)]
         [ValidateNotNullOrEmpty()]
-        $File
+        [string]$File
         ,
         [Parameter(Mandatory=$False)]
         [switch]$SkipWrapper
