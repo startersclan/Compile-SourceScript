@@ -55,7 +55,7 @@ $iterations = 2
 # The following test should be run only for Windows, reason being that the non-Windows version:
 # - Does not take in arguments, instead compiles all plugins within the scripting directory
 # - Displays all the output using 'less' at the end of the compilation, thus is limited to interactive use
-if ($env:OS) {
+if ($env:OS -eq 'Windows_NT') {
     $cmdArgs = @{
         File = "$PSScriptRoot\..\..\mod\amxmodx\addons\amxmodx\scripting\plugin1.sma"
         Force = $true
