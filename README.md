@@ -45,7 +45,7 @@ Install-Module -Name Compile-SourceScript -Repository PSGallery -Scope AllUsers 
 ### Functions
 
 ```powershell
-Compile-SourceScript [[-File] <Object>] [-SkipWrapper] [-Force] [<CommonParameters>]
+Compile-SourceScript [-File] <String> [-SkipWrapper] [-Force] [<CommonParameters>]
 ```
 
 #### Example 1
