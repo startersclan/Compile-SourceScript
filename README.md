@@ -17,7 +17,7 @@ A PowerShell module for compiling [**SourceMod**](https://www.sourcemod.net/) ([
 
 ## Requirements
 
-- **Windows** with [PowerShell 4.0 or later](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-windows-powershell?view=powershell-5.1), or ***nix** with [PowerShell Core](https://github.com/powershell/powershell).
+- **Windows** with [PowerShell 4.0 or later](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-windows-powershell?view=powershell-5.1), or ***nix** with [PowerShell Core](https://github.com/powershell/powershell#-powershell).
 
 ## Installation
 
