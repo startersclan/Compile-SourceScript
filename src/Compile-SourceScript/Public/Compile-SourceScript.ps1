@@ -63,10 +63,9 @@ function Compile-SourceScript {
                 if (!(Test-Path $ScriptingDirectory -PathType Container)) {
                     throw "Specified scripting directory $ScriptingDirectory must be an existing directory."
                 }
-            }else {
-                if (!($sourceFile.DirectoryName | Split-Path)) {
-                    throw "The directory 'addons/$MOD_NAME/' cannot exist relative to the specified plugin source file '$($sourceFile.FullName)'."
-                }
+            }
+            if (!($sourceFile.DirectoryName | Split-Path)) {
+                throw "The directory 'addons/$MOD_NAME/' cannot exist relative to the specified plugin source file '$($sourceFile.FullName)'."
             }
 
             # Initialize variables
