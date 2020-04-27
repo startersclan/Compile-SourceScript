@@ -134,6 +134,7 @@ function Compile-SourceScript {
                 RedirectStandardInput = $stdInFile.FullName
                 Wait = $true
                 NoNewWindow = $true
+                PassThru = $true
             }
             if ($PSBoundParameters['SkipWrapper']) {
                 $processArgs['ArgumentList'] = @(
@@ -149,7 +150,38 @@ function Compile-SourceScript {
 
             # Begin compilation
             if ($PSBoundParameters['SkipWrapper']) { "Compiling $($sourceFile.Name)..." | Write-Host -ForegroundColor Yellow }
-            Start-Process @processArgs
+            switch($MOD_NAME) {
+                'sourcemod' {
+                    $p = Start-Process @processArgs
+                    $global:LASTEXITCODE = $p.ExitCode
+                }
+                'amxmodx' {
+                    # The amxmodx compiler always exits with exit code 0, so we have to use a regex on the stdout
+                    $global:LASTEXITCODE = 0
+
+                    $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) (New-Guid).Guid
+                    $stdoutFile = Join-Path $tempDir 'stdout'
+                    $stderrFile = Join-Path $tempDir 'stderr'
+                    $processArgs['RedirectStandardOutput'] = $stdoutFile
+                    $processArgs['RedirectStandardError'] = $stderrFile
+                    New-Item $tempDir -ItemType Directory -Force
+                    $p = Start-Process @processArgs
+                    $stdout = Get-Content $stdoutFile
+                    $stderr = Get-Content $stderrFile
+                    foreach ($line in $stdout) {
+                        if ($line -match '^.*\.sma\(\d+\)\s*:\s*error (\d+)') {
+                            $global:LASTEXITCODE = $matches[1] -as [int] | Select-Object -First 1
+                            break
+                        }
+                    }
+
+                    # Cleanup
+                    Remove-Item $tempDir -Recurse -Force
+                }
+                default {
+                    throw "Invalid mod name $MOD_NAME."
+                }
+            }
             if ($PSBoundParameters['SkipWrapper']) { "End of compilation." | Write-Host -ForegroundColor Yellow }
 
             # Get all items in compiled directory after compilation by hash
