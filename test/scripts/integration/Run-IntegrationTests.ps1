@@ -41,6 +41,14 @@ $iterations = 2
 $expectExitCode = 0
 & $functionTestScriptBlock
 
+"`n[sourcemod] Compile plugin via wrapper" | Write-Host
+$cmdArgs = @{
+    File = "$PSScriptRoot\..\..\mod\sourcemod\addons\sourcemod\scripting\plugin1_bad.sp"
+    Force = $true
+}
+$iterations = 2
+$expectExitCode = 1
+& $functionTestScriptBlock
 
 "`n[sourcemod] Compile plugin via compiler" | Write-Host
 $cmdArgs = @{
@@ -52,6 +60,14 @@ $iterations = 2
 $expectExitCode = 0
 & $functionTestScriptBlock
 
+"`n[sourcemod] Compile plugin via wrapper" | Write-Host
+$cmdArgs = @{
+    File = "$PSScriptRoot\..\..\mod\sourcemod\addons\sourcemod\scripting\plugin2_bad.sp"
+    Force = $true
+}
+$iterations = 2
+$expectExitCode = 1
+& $functionTestScriptBlock
 
 #############
 # AMX Mod X #
@@ -69,6 +85,16 @@ if ($env:OS -eq 'Windows_NT') {
     $expectExitCode = 0
     $iterations = 2
     & $functionTestScriptBlock
+
+    "`n[amxmodx] Compile plugin via compiler" | Write-Host
+    $cmdArgs = @{
+        File = "$PSScriptRoot\..\..\mod\amxmodx\addons\amxmodx\scripting\plugin1_bad.sma"
+        Force = $true
+        SkipWrapper = $true
+    }
+    $expectExitCode = 10
+    $iterations = 2
+    & $functionTestScriptBlock
 }else { "Skipping: Test only applicable to Windows." | Write-Host }
 
 "`n[amxmodx] Compile plugin via compiler" | Write-Host
@@ -81,6 +107,15 @@ $expectExitCode = 0
 $iterations = 2
 & $functionTestScriptBlock
 
+"`n[amxmodx] Compile plugin via compiler" | Write-Host
+$cmdArgs = @{
+    File = "$PSScriptRoot\..\..\mod\amxmodx\addons\amxmodx\scripting\plugin2_bad.sma"
+    Force = $true
+    SkipWrapper = $true
+}
+$expectExitCode = 10
+$iterations = 2
+& $functionTestScriptBlock
 
 ###########
 # Results #
