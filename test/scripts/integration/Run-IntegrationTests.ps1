@@ -4,6 +4,9 @@ param()
 $ErrorActionPreference = 'Continue'
 $VerbosePreference = 'Continue'
 
+Get-Module Compile-SourceScript | Remove-Module -Force
+Import-Module  "$PSScriptRoot\..\..\..\src\Compile-SourceScript\Compile-SourceScript.psm1" -Force
+
 $failedCount = 0
 
 $functionTestScriptBlock = {
