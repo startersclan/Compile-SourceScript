@@ -34,6 +34,10 @@ function Compile-SourceScript {
         [string]$File
         ,
         [Parameter(Mandatory=$False)]
+        [ValidateNotNullOrEmpty()]
+        [string]$ScriptingDirectory
+        ,
+        [Parameter(Mandatory=$False)]
         [switch]$SkipWrapper
         ,
         [Parameter(Mandatory=$False)]
@@ -55,8 +59,14 @@ function Compile-SourceScript {
             if (!$MOD_NAME) {
                 throw "File is not a '.sp' or '.sma' source file."
             }
-            if (!($sourceFile.DirectoryName | Split-Path)) {
-                throw "The directory 'addons/$MOD_NAME/' cannot exist relative to the specified plugin source file '$($sourceFile.FullName)'."
+            if ($ScriptingDirectory) {
+                if (!(Test-Path $ScriptingDirectory -PathType Container)) {
+                    throw "Specified scripting directory $ScriptingDirectory must be an existing directory."
+                }
+            }else {
+                if (!($sourceFile.DirectoryName | Split-Path)) {
+                    throw "The directory 'addons/$MOD_NAME/' cannot exist relative to the specified plugin source file '$($sourceFile.FullName)'."
+                }
             }
 
             # Initialize variables
@@ -101,7 +111,7 @@ function Compile-SourceScript {
                 if ($PSBoundParameters['SkipWrapper']) { $MOD[$MOD_NAME]['compiler']['others']['bin'] }
                 else { $MOD[$MOD_NAME]['compiler']['others']['wrapper'] }
             }
-            $SCRIPTING_DIR = $sourceFile.DirectoryName
+            $SCRIPTING_DIR = if ($ScriptingDirectory) { $ScriptingDirectory } else { $sourceFile.DirectoryName  }
             $COMPILED_DIR = Join-Path $SCRIPTING_DIR $MOD[$MOD_NAME]['compiled_dir_name']
             $COMPILER_PATH = Join-Path $SCRIPTING_DIR $COMPILER_NAME
             $PLUGINS_DIR = Join-Path (Split-Path $SCRIPTING_DIR -Parent) $MOD[$MOD_NAME]['plugins_dir_name']

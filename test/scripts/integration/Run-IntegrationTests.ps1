@@ -46,6 +46,16 @@ $cmdArgs = @{
 $iterations = 2
 & $functionTestScriptBlock
 
+"`n[sourcemod] Compile plugin via compiler" | Write-Host
+$cmdArgs = @{
+    File = "$PSScriptRoot\..\..\mod\sourcemod\addons\sourcemod\scripting_custom\plugin3.sp"
+    ScriptingDirectory = "$PSScriptRoot\..\..\mod\sourcemod\addons\sourcemod\scripting"
+    Force = $true
+    SkipWrapper = $true
+}
+$iterations = 2
+& $functionTestScriptBlock
+
 
 #############
 # AMX Mod X #
@@ -73,6 +83,15 @@ $cmdArgs = @{
 $iterations = 2
 & $functionTestScriptBlock
 
+"`n[amxmodx] Compile plugin via compiler" | Write-Host
+$cmdArgs = @{
+    File = "$PSScriptRoot\..\..\mod\amxmodx\addons\amxmodx\scripting_custom\plugin3.sma"
+    ScriptingDirectory = "$PSScriptRoot\..\..\mod\amxmodx\addons\amxmodx\scripting"
+    Force = $true
+    SkipWrapper = $true
+}
+$iterations = 2
+& $functionTestScriptBlock
 
 ###########
 # Results #
