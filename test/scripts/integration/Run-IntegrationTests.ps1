@@ -14,6 +14,10 @@ $functionTestScriptBlock = {
         for ($i=0; $i -le $iterations-1; $i++) {
             "Iteration: $($i+1)" | Write-Host
             & $script:cmd @cmdArgs
+            if ($global:LASTEXITCODE -ne $expectExitCode) {
+                throw "Expected exit code $expectExitCode but got exit code $global:LASTEXITCODE"
+            }
+            "Expected exit code $expectExitCode, got exit code $global:LASTEXITCODE" | Write-Host
         }
     }catch {
         $_ | Write-Error
@@ -34,6 +38,7 @@ $cmdArgs = @{
     Force = $true
 }
 $iterations = 2
+$expectExitCode = 0
 & $functionTestScriptBlock
 
 
@@ -44,6 +49,7 @@ $cmdArgs = @{
     SkipWrapper = $true
 }
 $iterations = 2
+$expectExitCode = 0
 & $functionTestScriptBlock
 
 
@@ -60,6 +66,7 @@ if ($env:OS -eq 'Windows_NT') {
         File = "$PSScriptRoot\..\..\mod\amxmodx\addons\amxmodx\scripting\plugin1.sma"
         Force = $true
     }
+    $expectExitCode = 0
     $iterations = 2
     & $functionTestScriptBlock
 }else { "Skipping: Test only applicable to Windows." | Write-Host }
@@ -70,6 +77,7 @@ $cmdArgs = @{
     Force = $true
     SkipWrapper = $true
 }
+$expectExitCode = 0
 $iterations = 2
 & $functionTestScriptBlock
 
