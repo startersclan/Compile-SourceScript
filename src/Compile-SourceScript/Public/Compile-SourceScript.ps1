@@ -61,11 +61,15 @@ function Compile-SourceScript {
             }
             if ($ScriptingDirectory) {
                 if (!(Test-Path $ScriptingDirectory -PathType Container)) {
-                    throw "Specified scripting directory $ScriptingDirectory must be an existing directory."
+                    throw "Specified scripting directory '$ScriptingDirectory' must be an existing directory."
                 }
-            }
-            if (!($sourceFile.DirectoryName | Split-Path)) {
-                throw "The directory 'addons/$MOD_NAME/' cannot exist relative to the specified plugin source file '$($sourceFile.FullName)'."
+                if (!($ScriptingDirectory | Split-Path)) {
+                    throw "Invalid specified scripting directory '$ScriptingDirectory'. The scripting directory cannot be a root directory."
+                }
+            }else {
+                if (!($sourceFile.DirectoryName | Split-Path)) {
+                    throw "Invalid location for the specified file '$($sourceFile.FullName)'. The determined scripting directory '$($sourceFile.DirectoryName)' cannot be a root directory."
+                }
             }
 
             # Initialize variables
