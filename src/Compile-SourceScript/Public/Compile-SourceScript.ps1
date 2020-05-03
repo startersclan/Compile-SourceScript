@@ -60,11 +60,12 @@ function Compile-SourceScript {
                 throw "File is not a '.sp' or '.sma' source file."
             }
             if ($ScriptingDirectory) {
-                if (!(Test-Path $ScriptingDirectory -PathType Container)) {
-                    throw "Specified scripting directory '$ScriptingDirectory' must be an existing directory."
+                $_scriptingDirectory = Get-Item $ScriptingDirectory
+                if (!(Test-Path $_scriptingDirectory -PathType Container)) {
+                    throw "Specified scripting directory '$_scriptingDirectory' must be an existing directory."
                 }
-                if (!($ScriptingDirectory | Split-Path)) {
-                    throw "Invalid specified scripting directory '$ScriptingDirectory'. The scripting directory cannot be a root directory."
+                if (!($_scriptingDirectory | Split-Path)) {
+                    throw "Invalid specified scripting directory '$_scriptingDirectory'. The scripting directory cannot be a root directory."
                 }
             }else {
                 if (!($sourceFile.DirectoryName | Split-Path)) {
@@ -114,7 +115,7 @@ function Compile-SourceScript {
                 if ($PSBoundParameters['SkipWrapper']) { $MOD[$MOD_NAME]['compiler']['others']['bin'] }
                 else { $MOD[$MOD_NAME]['compiler']['others']['wrapper'] }
             }
-            $SCRIPTING_DIR = if ($ScriptingDirectory) { $ScriptingDirectory } else { $sourceFile.DirectoryName  }
+            $SCRIPTING_DIR = if ($ScriptingDirectory) { $_scriptingDirectory.FullName } else { $sourceFile.DirectoryName }
             $COMPILED_DIR = Join-Path $SCRIPTING_DIR $MOD[$MOD_NAME]['compiled_dir_name']
             $COMPILER_PATH = Join-Path $SCRIPTING_DIR $COMPILER_NAME
             $PLUGINS_DIR = Join-Path (Split-Path $SCRIPTING_DIR -Parent) $MOD[$MOD_NAME]['plugins_dir_name']
@@ -150,12 +151,12 @@ function Compile-SourceScript {
             }
             if ($PSBoundParameters['SkipWrapper']) {
                 $processArgs['ArgumentList'] = @(
-                    $sourceFile.Name
+                    if ($ScriptingDirectory) { $sourceFile.FullName } else { $sourceFile.Name }
                     "-o$($MOD[$MOD_NAME]['compiled_dir_name'])/$($sourceFile.Basename)$($MOD[$MOD_NAME]['plugin_ext'])"
                 )
             }else {
                 $processArgs['ArgumentList'] = @(
-                    $sourceFile.Name
+                    if ($ScriptingDirectory) { $sourceFile.FullName } else { $sourceFile.Name }
                 )
             }
             New-Item -Path $COMPILED_DIR -ItemType Directory -Force | Out-Null
