@@ -61,13 +61,16 @@ function Compile-SourceScript {
             }
             if ($ScriptingDirectory) {
                 $scriptingDirectoryItem = Get-Item $ScriptingDirectory -ErrorAction SilentlyContinue
+                if (!$scriptingDirectoryItem) {
+                    throw "Specified scripting directory '$ScriptingDirectory' does not exist"
+                }
                 if (!(Test-Path $scriptingDirectoryItem.FullName -PathType Container)) {
                     throw "Specified scripting directory '$( $scriptingDirectoryItem.FullName )' must be an existing directory."
                 }
                 if (!(Split-Path $scriptingDirectoryItem.FullName -Parent)) {
                     throw "Invalid specified scripting directory '$( $scriptingDirectoryItem.FullName )'. The scripting directory cannot be a root directory."
                 }
-                $ScriptingDirectory = Convert-Path $ScriptingDirectory
+                $ScriptingDirectory = $scriptingDirectoryItem.FullName
             }else {
                 if (!(Split-Path $sourceFile.DirectoryName -Parent)) {
                     throw "Invalid location for the specified file '$($sourceFile.FullName)'. The determined scripting directory '$($sourceFile.DirectoryName)' cannot be a root directory."
