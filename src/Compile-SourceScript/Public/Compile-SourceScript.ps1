@@ -60,15 +60,15 @@ function Compile-SourceScript {
                 throw "File is not a '.sp' or '.sma' source file."
             }
             if ($ScriptingDirectory) {
-                $_scriptingDirectory = Get-Item $ScriptingDirectory
-                if (!(Test-Path $_scriptingDirectory -PathType Container)) {
-                    throw "Specified scripting directory '$_scriptingDirectory' must be an existing directory."
+                $scriptingDirectoryItem = Get-Item $ScriptingDirectory -ErrorAction SilentlyContinue
+                if (!(Test-Path $scriptingDirectoryItem.FullName -PathType Container)) {
+                    throw "Specified scripting directory '$( $scriptingDirectoryItem.FullName )' must be an existing directory."
                 }
-                if (!($_scriptingDirectory | Split-Path)) {
-                    throw "Invalid specified scripting directory '$_scriptingDirectory'. The scripting directory cannot be a root directory."
+                if (!(Split-Path $scriptingDirectoryItem.FullName -Parent)) {
+                    throw "Invalid specified scripting directory '$( $scriptingDirectoryItem.FullName )'. The scripting directory cannot be a root directory."
                 }
             }else {
-                if (!($sourceFile.DirectoryName | Split-Path)) {
+                if (!(Split-Path $sourceFile.DirectoryName -Parent)) {
                     throw "Invalid location for the specified file '$($sourceFile.FullName)'. The determined scripting directory '$($sourceFile.DirectoryName)' cannot be a root directory."
                 }
             }
