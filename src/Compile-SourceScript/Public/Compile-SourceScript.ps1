@@ -67,6 +67,7 @@ function Compile-SourceScript {
                 if (!(Split-Path $scriptingDirectoryItem.FullName -Parent)) {
                     throw "Invalid specified scripting directory '$( $scriptingDirectoryItem.FullName )'. The scripting directory cannot be a root directory."
                 }
+                $ScriptingDirectory = Convert-Path $ScriptingDirectory
             }else {
                 if (!(Split-Path $sourceFile.DirectoryName -Parent)) {
                     throw "Invalid location for the specified file '$($sourceFile.FullName)'. The determined scripting directory '$($sourceFile.DirectoryName)' cannot be a root directory."
@@ -115,7 +116,7 @@ function Compile-SourceScript {
                 if ($PSBoundParameters['SkipWrapper']) { $MOD[$MOD_NAME]['compiler']['others']['bin'] }
                 else { $MOD[$MOD_NAME]['compiler']['others']['wrapper'] }
             }
-            $SCRIPTING_DIR = if ($ScriptingDirectory) { $_scriptingDirectory.FullName } else { $sourceFile.DirectoryName }
+            $SCRIPTING_DIR = if ($ScriptingDirectory) { $ScriptingDirectory } else { $sourceFile.DirectoryName }
             $COMPILED_DIR = Join-Path $SCRIPTING_DIR $MOD[$MOD_NAME]['compiled_dir_name']
             $COMPILER_PATH = Join-Path $SCRIPTING_DIR $COMPILER_NAME
             $PLUGINS_DIR = Join-Path (Split-Path $SCRIPTING_DIR -Parent) $MOD[$MOD_NAME]['plugins_dir_name']
