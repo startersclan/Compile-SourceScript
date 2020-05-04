@@ -215,7 +215,8 @@ function Compile-SourceScript {
                     }
 
                     # Alert the user on the situation of the plugin
-                    $updatedPlugin = Get-Item -Path "$PLUGINS_DIR/$($_.Name)"
+                    $updatedPlugin = Get-Item -Path "$PLUGINS_DIR/$($_.Name)" -ErrorAction SilentlyContinue
+                    if (!$updatedPlugin) { "`n    Plugin does not exist in the plugins directory." | Write-Host -ForegroundColor Magenta; return }
                     $updatedPluginHash = (Get-FileHash -Path $updatedPlugin -Algorithm MD5).Hash
                     if ($updatedPluginHash -eq $compiledPluginHash) { "`n    Plugin successfully copied to '$($_.Fullname)'" | Write-Host -ForegroundColor Green }
                     else { "`n    Failed to copy to the plugins directory." | Write-Host -ForegroundColor Magenta; return }
