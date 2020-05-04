@@ -17,7 +17,7 @@ A PowerShell module for compiling [**SourceMod**](https://www.sourcemod.net/) ([
 
 ## Requirements
 
-- **Windows** with [PowerShell 4.0 or later](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-windows-powershell?view=powershell-5.1), or ***nix** with [PowerShell Core](https://github.com/powershell/powershell).
+- **Windows** with [PowerShell 4.0 or later](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-windows-powershell), or ***nix** with [PowerShell Core](https://github.com/powershell/powershell#-powershell).
 
 ## Installation
 
@@ -45,7 +45,7 @@ Install-Module -Name Compile-SourceScript -Repository PSGallery -Scope AllUsers 
 ### Functions
 
 ```powershell
-Compile-SourceScript [[-File] <Object>] [-SkipWrapper] [-Force] [<CommonParameters>]
+Compile-SourceScript [-File] <String> [-SkipWrapper] [-Force] [<CommonParameters>]
 ```
 
 #### Example 1
