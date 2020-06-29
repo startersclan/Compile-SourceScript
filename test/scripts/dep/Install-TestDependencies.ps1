@@ -15,7 +15,7 @@ try {
         "Installing Pester" | Write-Host
         Install-Module -Name 'Pester' -Repository 'PSGallery' -MinimumVersion $pesterMinimumVersion -MaximumVersion $pesterMaximumVersion -Scope CurrentUser -Force
     }
-    Get-Module Pester -ListAvailable
+    Get-Module Pester -ListAvailable | Out-String | Write-Verbose
 
     if ($env:OS -ne 'Windows_NT') {
         if ($IsLinux) {
