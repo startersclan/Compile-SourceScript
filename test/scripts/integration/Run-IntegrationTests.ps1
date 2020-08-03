@@ -17,7 +17,7 @@ $functionTestScriptBlock = {
             if ($global:LASTEXITCODE -ne $expectExitCode) {
                 throw "Expected exit code $expectExitCode but got exit code $global:LASTEXITCODE"
             }
-            "Expected exit code $expectExitCode, got exit code $global:LASTEXITCODE" | Write-Host
+            "Expected exit code: $expectExitCode, Exit code: $global:LASTEXITCODE" | Write-Host -ForegroundColor Yellow
         }
     }catch {
         $_ | Write-Error
