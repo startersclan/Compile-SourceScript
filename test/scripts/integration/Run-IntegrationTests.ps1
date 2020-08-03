@@ -91,7 +91,6 @@ if ($env:OS -eq 'Windows_NT') {
     $cmdArgs = @{
         File = "$PSScriptRoot\..\..\mod\amxmodx\addons\amxmodx\scripting\plugin1_bad.sma"
         Force = $true
-        SkipWrapper = $true
     }
     $expectExitCode = 1
     $iterations = 2
