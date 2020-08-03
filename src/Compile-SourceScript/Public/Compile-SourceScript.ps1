@@ -173,6 +173,7 @@ function Compile-SourceScript {
                 New-Item $tempDir -ItemType Directory -Force > $null
                 $p = Start-Process @processArgs
                 $stdout = Get-Content $stdoutFile
+                $stdout | Write-Host
                 $stderr = Get-Content $stderrFile
                 foreach ($line in $stdout) {
                     if ($line -match $pluginErrorRegexPattern) {
