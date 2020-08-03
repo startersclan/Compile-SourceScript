@@ -154,9 +154,7 @@ function Compile-SourceScript {
                 }
             }elseif ($MOD_NAME -eq 'amxmodx') {
                 $pluginErrorRegexPattern = '^.*\.sma\(\d+\)\s*:\s*error (\d+)'
-                if ($PSBoundParameters['SkipWrapper']) {
-                    $returnExitCode = $true
-                }
+                $returnExitCode = $true
             }
             New-Item -Path $COMPILED_DIR -ItemType Directory -Force | Out-Null
 
