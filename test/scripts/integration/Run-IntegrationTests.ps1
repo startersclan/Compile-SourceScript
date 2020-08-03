@@ -93,7 +93,7 @@ if ($env:OS -eq 'Windows_NT') {
         Force = $true
         SkipWrapper = $true
     }
-    $expectExitCode = 10
+    $expectExitCode = 1
     $iterations = 2
     & $functionTestScriptBlock
 }else { "Skipping: Test only applicable to Windows." | Write-Host }
@@ -114,7 +114,7 @@ $cmdArgs = @{
     Force = $true
     SkipWrapper = $true
 }
-$expectExitCode = 10
+$expectExitCode = 1
 $iterations = 2
 & $functionTestScriptBlock
 
