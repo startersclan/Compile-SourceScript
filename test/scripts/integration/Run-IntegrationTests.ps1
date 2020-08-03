@@ -14,10 +14,10 @@ $functionTestScriptBlock = {
         for ($i=0; $i -le $iterations-1; $i++) {
             "Iteration: $($i+1)" | Write-Host
             & $script:cmd @cmdArgs
-            if ($global:LASTEXITCODE -ne $expectExitCode) {
-                throw "Expected exit code $expectExitCode but got exit code $global:LASTEXITCODE"
+            if ($global:LASTEXITCODE -ne $expectedExitCode) {
+                throw "Expected exit code $expectedExitCode but got exit code $global:LASTEXITCODE"
             }
-            "Expected exit code: $expectExitCode, Exit code: $global:LASTEXITCODE" | Write-Host -ForegroundColor Yellow
+            "Expected exit code: $expectedExitCode, Exit code: $global:LASTEXITCODE" | Write-Host -ForegroundColor Yellow
         }
     }catch {
         $_ | Write-Error
@@ -38,7 +38,7 @@ $cmdArgs = @{
     Force = $true
 }
 $iterations = 2
-$expectExitCode = 0
+$expectedExitCode = 0
 & $functionTestScriptBlock
 
 "`n[sourcemod] Compile plugin via wrapper, bad plugin" | Write-Host
@@ -47,7 +47,7 @@ $cmdArgs = @{
     Force = $true
 }
 $iterations = 2
-$expectExitCode = 1
+$expectedExitCode = 1
 & $functionTestScriptBlock
 
 "`n[sourcemod] Compile plugin via compiler" | Write-Host
@@ -57,7 +57,7 @@ $cmdArgs = @{
     SkipWrapper = $true
 }
 $iterations = 2
-$expectExitCode = 0
+$expectedExitCode = 0
 & $functionTestScriptBlock
 
 "`n[sourcemod] Compile plugin via compiler, bad plugin" | Write-Host
@@ -67,7 +67,7 @@ $cmdArgs = @{
     SkipWrapper = $true
 }
 $iterations = 2
-$expectExitCode = 1
+$expectedExitCode = 1
 & $functionTestScriptBlock
 
 #############
@@ -83,7 +83,7 @@ if ($env:OS -eq 'Windows_NT') {
         File = "$PSScriptRoot\..\..\mod\amxmodx\addons\amxmodx\scripting\plugin1.sma"
         Force = $true
     }
-    $expectExitCode = 0
+    $expectedExitCode = 0
     $iterations = 2
     & $functionTestScriptBlock
 
@@ -92,7 +92,7 @@ if ($env:OS -eq 'Windows_NT') {
         File = "$PSScriptRoot\..\..\mod\amxmodx\addons\amxmodx\scripting\plugin1_bad.sma"
         Force = $true
     }
-    $expectExitCode = 1
+    $expectedExitCode = 1
     $iterations = 2
     & $functionTestScriptBlock
 }else { "Skipping: Test only applicable to Windows." | Write-Host }
@@ -103,7 +103,7 @@ $cmdArgs = @{
     Force = $true
     SkipWrapper = $true
 }
-$expectExitCode = 0
+$expectedExitCode = 0
 $iterations = 2
 & $functionTestScriptBlock
 
@@ -113,7 +113,7 @@ $cmdArgs = @{
     Force = $true
     SkipWrapper = $true
 }
-$expectExitCode = 1
+$expectedExitCode = 1
 $iterations = 2
 & $functionTestScriptBlock
 
