@@ -164,7 +164,7 @@ function Compile-SourceScript {
                     $stderrFile = Join-Path $tempDir 'stderr'
                     $processArgs['RedirectStandardOutput'] = $stdoutFile
                     $processArgs['RedirectStandardError'] = $stderrFile
-                    New-Item $tempDir -ItemType Directory -Force
+                    New-Item $tempDir -ItemType Directory -Force > $null
                     $p = Start-Process @processArgs
                     $stdout = Get-Content $stdoutFile
                     $stderr = Get-Content $stderrFile
