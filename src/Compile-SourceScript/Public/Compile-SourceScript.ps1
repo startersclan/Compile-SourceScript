@@ -149,7 +149,7 @@ function Compile-SourceScript {
             $returnExitCode = $false
             if ($MOD_NAME -eq 'sourcemod') {
                 $pluginErrorRegexPattern = '^\/\/\s*.*\.sp\(\d+\)\s*:\s*error (\d+)'
-                if (!$PSBoundParameters['SkipWrapper']) {
+                if (!$PSBoundParameters['SkipWrapper'] -or $env:OS -ne 'Windows_NT') {
                     $returnExitCode = $true
                 }
             }elseif ($MOD_NAME -eq 'amxmodx') {
