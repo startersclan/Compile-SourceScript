@@ -41,7 +41,7 @@ $iterations = 2
 $expectExitCode = 0
 & $functionTestScriptBlock
 
-"`n[sourcemod] Compile plugin via wrapper" | Write-Host
+"`n[sourcemod] Compile plugin via wrapper, bad plugin" | Write-Host
 $cmdArgs = @{
     File = "$PSScriptRoot\..\..\mod\sourcemod\addons\sourcemod\scripting\plugin1_bad.sp"
     Force = $true
@@ -60,10 +60,11 @@ $iterations = 2
 $expectExitCode = 0
 & $functionTestScriptBlock
 
-"`n[sourcemod] Compile plugin via wrapper" | Write-Host
+"`n[sourcemod] Compile plugin via compiler, bad plugin" | Write-Host
 $cmdArgs = @{
     File = "$PSScriptRoot\..\..\mod\sourcemod\addons\sourcemod\scripting\plugin2_bad.sp"
     Force = $true
+    SkipWrapper = $true
 }
 $iterations = 2
 $expectExitCode = 1
@@ -86,7 +87,7 @@ if ($env:OS -eq 'Windows_NT') {
     $iterations = 2
     & $functionTestScriptBlock
 
-    "`n[amxmodx] Compile plugin via compiler" | Write-Host
+    "`n[amxmodx] Compile plugin via wrapper, bad plugin" | Write-Host
     $cmdArgs = @{
         File = "$PSScriptRoot\..\..\mod\amxmodx\addons\amxmodx\scripting\plugin1_bad.sma"
         Force = $true
@@ -107,7 +108,7 @@ $expectExitCode = 0
 $iterations = 2
 & $functionTestScriptBlock
 
-"`n[amxmodx] Compile plugin via compiler" | Write-Host
+"`n[amxmodx] Compile plugin via compiler, bad plugin" | Write-Host
 $cmdArgs = @{
     File = "$PSScriptRoot\..\..\mod\amxmodx\addons\amxmodx\scripting\plugin2_bad.sma"
     Force = $true
