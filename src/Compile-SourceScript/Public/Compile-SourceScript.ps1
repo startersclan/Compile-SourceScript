@@ -146,41 +146,48 @@ function Compile-SourceScript {
                     $sourceFile.Name
                 )
             }
+            $returnExitCode = $false
+            if ($MOD_NAME -eq 'sourcemod') {
+                $pluginErrorRegexPattern = '^\/\/\s*.*\.sp\(\d+\)\s*:\s*error (\d+)'
+                if (!$PSBoundParameters['SkipWrapper']) {
+                    $returnExitCode = $true
+                }
+            }elseif ($MOD_NAME -eq 'amxmodx') {
+                $pluginErrorRegexPattern = '^.*\.sma\(\d+\)\s*:\s*error (\d+)'
+                if ($PSBoundParameters['SkipWrapper']) {
+                    $returnExitCode = $true
+                }
+            }
             New-Item -Path $COMPILED_DIR -ItemType Directory -Force | Out-Null
 
             # Begin compilation
             if ($PSBoundParameters['SkipWrapper']) { "Compiling $($sourceFile.Name)..." | Write-Host -ForegroundColor Yellow }
-            switch($MOD_NAME) {
-                'sourcemod' {
-                    $p = Start-Process @processArgs
-                    $global:LASTEXITCODE = $p.ExitCode
-                }
-                'amxmodx' {
-                    # The amxmodx compiler always exits with exit code 0, so we have to use a regex on the stdout
-                    $global:LASTEXITCODE = 0
 
-                    $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) (New-Guid).Guid
-                    $stdoutFile = Join-Path $tempDir 'stdout'
-                    $stderrFile = Join-Path $tempDir 'stderr'
-                    $processArgs['RedirectStandardOutput'] = $stdoutFile
-                    $processArgs['RedirectStandardError'] = $stderrFile
-                    New-Item $tempDir -ItemType Directory -Force > $null
-                    $p = Start-Process @processArgs
-                    $stdout = Get-Content $stdoutFile
-                    $stderr = Get-Content $stderrFile
-                    foreach ($line in $stdout) {
-                        if ($line -match '^.*\.sma\(\d+\)\s*:\s*error (\d+)') {
-                            $global:LASTEXITCODE = $matches[1] -as [int] | Select-Object -First 1
-                            break
-                        }
+            if ($returnExitCode) {
+                # The amxmodx compiler always exits with exit code 0, so we have to use a regex on the stdout
+                $global:LASTEXITCODE = 0
+
+                $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) (New-Guid).Guid
+                $stdoutFile = Join-Path $tempDir 'stdout'
+                $stderrFile = Join-Path $tempDir 'stderr'
+                $processArgs['RedirectStandardOutput'] = $stdoutFile
+                $processArgs['RedirectStandardError'] = $stderrFile
+                New-Item $tempDir -ItemType Directory -Force > $null
+                $p = Start-Process @processArgs
+                $stdout = Get-Content $stdoutFile
+                $stderr = Get-Content $stderrFile
+                foreach ($line in $stdout) {
+                    if ($line -match $pluginErrorRegexPattern) {
+                        $global:LASTEXITCODE = 1
+                        break
                     }
+                }
 
-                    # Cleanup
-                    Remove-Item $tempDir -Recurse -Force
-                }
-                default {
-                    throw "Invalid mod name $MOD_NAME."
-                }
+                # Cleanup
+                Remove-Item $tempDir -Recurse -Force
+            }else {
+                $p = Start-Process @processArgs
+                $global:LASTEXITCODE = $p.ExitCode
             }
             if ($PSBoundParameters['SkipWrapper']) { "End of compilation." | Write-Host -ForegroundColor Yellow }
 
