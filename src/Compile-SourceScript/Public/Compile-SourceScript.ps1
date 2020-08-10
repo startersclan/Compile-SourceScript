@@ -123,29 +123,39 @@ function Compile-SourceScript {
             # Get all items in compiled directory before compilation by hash
             $compiledDirItemsPre = Get-ChildItem -Path $COMPILED_DIR -File -Recurse -Force | ? { $_.Extension -eq $MOD[$MOD_NAME]['plugin_ext'] } | Select-Object *, @{name='md5'; expression={(Get-FileHash -Path $_.Fullname -Algorithm MD5).Hash}}
 
-            # Prepare for compilation
-            "Compiling..." | Write-Host -ForegroundColor Cyan
+            # Generate command line arguments
             $epoch = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
-            $stdInFile = New-Item -Path (Join-Path $SCRIPTING_DIR ".$epoch") -ItemType File -Force
-            '1' | Out-File -FilePath $stdInFile.FullName -Force -Encoding utf8
+            $stdInFile = Join-Path $SCRIPTING_DIR ".$epoch"
+            $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) (New-Guid).Guid
+            $stdoutFile = Join-Path $tempDir 'stdout'
+            $stderrFile = Join-Path $tempDir 'stderr'
             $processArgs = @{
                 FilePath = $compiler.FullName
+                ArgumentList = @(
+                    if ($PSBoundParameters['SkipWrapper']) {
+                        $sourceFile.Name
+                        "-o$($MOD[$MOD_NAME]['compiled_dir_name'])/$($sourceFile.Basename)$($MOD[$MOD_NAME]['plugin_ext'])"
+                    }else {
+                        $sourceFile.Name
+                    }
+                )
                 WorkingDirectory = $SCRIPTING_DIR
-                RedirectStandardInput = $stdInFile.FullName
+                RedirectStandardInput = $stdInFile
+                RedirectStandardOutput = $stdoutFile
+                RedirectStandardError = $stderrFile
                 Wait = $true
                 NoNewWindow = $true
                 PassThru = $true
             }
-            if ($PSBoundParameters['SkipWrapper']) {
-                $processArgs['ArgumentList'] = @(
-                    $sourceFile.Name
-                    "-o$($MOD[$MOD_NAME]['compiled_dir_name'])/$($sourceFile.Basename)$($MOD[$MOD_NAME]['plugin_ext'])"
-                )
-            }else {
-                $processArgs['ArgumentList'] = @(
-                    $sourceFile.Name
-                )
+
+            # Prepare compilation environment
+            if ($item = New-Item -Path $stdInFile -ItemType File -Force) {
+                # This dummy input bypasses the 'Press any key to continue' prompt of the compiler
+                '1' | Out-File -FilePath $item.FullName -Force -Encoding utf8
             }
+            New-Item $tempDir -ItemType Directory -Force > $null
+            New-Item -Path $COMPILED_DIR -ItemType Directory -Force | Out-Null
+
             $returnExitCode = $false
             if ($MOD_NAME -eq 'sourcemod') {
                 $pluginErrorRegexPattern = '^.*\.sp\(\d+\)\s*:\s*error (\d+)'
@@ -156,21 +166,15 @@ function Compile-SourceScript {
                 $pluginErrorRegexPattern = '^.*\.sma\(\d+\)\s*:\s*error (\d+)'
                 $returnExitCode = $true
             }
-            New-Item -Path $COMPILED_DIR -ItemType Directory -Force | Out-Null
 
             # Begin compilation
+            "Compiling..." | Write-Host -ForegroundColor Cyan
             if ($PSBoundParameters['SkipWrapper']) { "Compiling $($sourceFile.Name)..." | Write-Host -ForegroundColor Yellow }
 
             if ($returnExitCode) {
                 # The amxmodx compiler always exits with exit code 0, so we have to use a regex on the stdout
                 $global:LASTEXITCODE = 0
 
-                $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) (New-Guid).Guid
-                $stdoutFile = Join-Path $tempDir 'stdout'
-                $stderrFile = Join-Path $tempDir 'stderr'
-                $processArgs['RedirectStandardOutput'] = $stdoutFile
-                $processArgs['RedirectStandardError'] = $stderrFile
-                New-Item $tempDir -ItemType Directory -Force > $null
                 $p = Start-Process @processArgs
                 $stdout = Get-Content $stdoutFile
                 $stdout | Write-Host
