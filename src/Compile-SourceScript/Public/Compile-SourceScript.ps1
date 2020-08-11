@@ -73,12 +73,12 @@ function Compile-SourceScript {
                         windows = @{
                             wrapper = 'compile.exe'
                             bin = 'spcomp.exe'
-                            error_regex = '^.*\.sp\(\d+\)\s*:\s*error (\d+)'
+                            error_regex = '^Compilation aborted|^\d+\s+Errors?|.*\.sp\(\d+\)\s*:\s*(?:fatal)? error (\d+)'
                         }
                         others = @{
                             wrapper = 'compile.sh'
                             bin = 'spcomp'
-                            error_regex = '^.*\.sp\(\d+\)\s*:\s*error (\d+)'
+                            error_regex = '^Compilation aborted|^\d+\s+Errors?|.*\.sp\(\d+\)\s*:\s*(?:fatal)? error (\d+)'
                         }
                     }
                 }
@@ -94,12 +94,12 @@ function Compile-SourceScript {
                         windows = @{
                             wrapper = 'compile.exe'
                             bin = 'amxxpc.exe'
-                            error_regex = '^.*\.sma\(\d+\)\s*:\s*error (\d+)'
+                            error_regex = '^\d+\s+Errors?|compile failed|^.*\.sma\(\d+\)\s*:\s*error (\d+)'
                         }
                         others = @{
                             wrapper = 'compile.sh'
                             bin = 'amxxpc'
-                            error_regex = '^.*\.sma\(\d+\)\s*:\s*error (\d+)'
+                            error_regex = '^\d+\s+Errors?|compile failed|^.*\.sma\(\d+\)\s*:\s*error (\d+)'
                         }
                     }
                 }
