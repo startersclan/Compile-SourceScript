@@ -179,6 +179,7 @@ function Compile-SourceScript {
             }
 
             # Cleanup
+            Remove-Item $stdInFile -Force
             Remove-Item $tempDir -Recurse -Force
 
             if ($PSBoundParameters['SkipWrapper']) { "End of compilation." | Write-Host -ForegroundColor Yellow }
@@ -262,10 +263,6 @@ function Compile-SourceScript {
         }catch {
             Write-Error -Exception $_.Exception -Message $_.Exception.Message -Category $_.CategoryInfo.Category -TargetObject $_.TargetObject
         }finally {
-            # Cleanup
-            if ($stdInFile) {
-                Remove-Item -Path $stdInFile -Force
-            }
             "End of Compile-SourceScript." | Write-Host -ForegroundColor Cyan
         }
     }
