@@ -61,6 +61,9 @@ function Compile-SourceScript {
 
             # Initialize variables
             $MOD = @{
+                # The sourcemod compiler returns exits code correctly.
+                # The sourcemod compiler wrapper returns the exit code of the lastmost executed shell statement. This is particularly bad when the compiler exits with '0' from a successful finalmost shell statement, even when one or more prior shell statements exited with non-zero exit codes.
+                # Hence, knowing that exit codes are not a reliable way to determine whether one or more compilation statements failed, we are going to use a regex on the stdout as a more reliable way to detect compilation errors, regardless of whether compilation was performed via the compiler binary or via the compiler wrapper.
                 sourcemod = @{
                     script_ext = '.sp'
                     plugin_ext = '.smx'
@@ -70,13 +73,18 @@ function Compile-SourceScript {
                         windows = @{
                             wrapper = 'compile.exe'
                             bin = 'spcomp.exe'
+                            error_regex = '^.*\.sp\(\d+\)\s*:\s*error (\d+)'
                         }
                         others = @{
                             wrapper = 'compile.sh'
                             bin = 'spcomp'
+                            error_regex = '^.*\.sp\(\d+\)\s*:\s*error (\d+)'
                         }
                     }
                 }
+                # The amxmodx compiler binary always exits with exit code 0.
+                # The amxmodx compiler wrapper always exits with exit code 0.
+                # Hence, knowing that exit codes are not a reliable way to determine whether one or more compilation statements failed, we are going to use a regex on the stdout as a more reliable way to detect compilation errors, regardless of whether compilation was performed via the compiler binary or via the compiler wrapper.
                 amxmodx = @{
                     script_ext = '.sma'
                     plugin_ext = '.amxx'
@@ -86,21 +94,18 @@ function Compile-SourceScript {
                         windows = @{
                             wrapper = 'compile.exe'
                             bin = 'amxxpc.exe'
+                            error_regex = '^.*\.sma\(\d+\)\s*:\s*error (\d+)'
                         }
                         others = @{
                             wrapper = 'compile.sh'
                             bin = 'amxxpc'
+                            error_regex = '^.*\.sma\(\d+\)\s*:\s*error (\d+)'
                         }
                     }
                 }
             }
-            $COMPILER_NAME = if ($env:OS -eq 'Windows_NT') {
-                if ($PSBoundParameters['SkipWrapper']) { $MOD[$MOD_NAME]['compiler']['windows']['bin'] }
-                else { $MOD[$MOD_NAME]['compiler']['windows']['wrapper'] }
-            }else {
-                if ($PSBoundParameters['SkipWrapper']) { $MOD[$MOD_NAME]['compiler']['others']['bin'] }
-                else { $MOD[$MOD_NAME]['compiler']['others']['wrapper'] }
-            }
+            $OS = if ($env:OS -eq 'Windows_NT') { 'windows' } else { 'others' }
+            $COMPILER_NAME = if ($PSBoundParameters['SkipWrapper']) { $MOD[$MOD_NAME]['compiler'][$OS]['bin'] } else { $MOD[$MOD_NAME]['compiler'][$OS]['wrapper'] }
             $SCRIPTING_DIR = $sourceFile.DirectoryName
             $COMPILED_DIR = Join-Path $SCRIPTING_DIR $MOD[$MOD_NAME]['compiled_dir_name']
             $COMPILER_PATH = Join-Path $SCRIPTING_DIR $COMPILER_NAME
@@ -156,42 +161,26 @@ function Compile-SourceScript {
             New-Item $tempDir -ItemType Directory -Force > $null
             New-Item -Path $COMPILED_DIR -ItemType Directory -Force | Out-Null
 
-            $returnExitCode = $false
-            if ($MOD_NAME -eq 'sourcemod') {
-                $pluginErrorRegexPattern = '^.*\.sp\(\d+\)\s*:\s*error (\d+)'
-                if (!$PSBoundParameters['SkipWrapper'] -or $env:OS -ne 'Windows_NT') {
-                    $returnExitCode = $true
-                }
-            }elseif ($MOD_NAME -eq 'amxmodx') {
-                $pluginErrorRegexPattern = '^.*\.sma\(\d+\)\s*:\s*error (\d+)'
-                $returnExitCode = $true
-            }
-
             # Begin compilation
             "Compiling..." | Write-Host -ForegroundColor Cyan
             if ($PSBoundParameters['SkipWrapper']) { "Compiling $($sourceFile.Name)..." | Write-Host -ForegroundColor Yellow }
 
-            if ($returnExitCode) {
-                # The amxmodx compiler always exits with exit code 0, so we have to use a regex on the stdout
-                $global:LASTEXITCODE = 0
-
-                $p = Start-Process @processArgs
-                $stdout = Get-Content $stdoutFile
-                $stdout | Write-Host
-                $stderr = Get-Content $stderrFile
-                foreach ($line in $stdout) {
-                    if ($line -match $pluginErrorRegexPattern) {
-                        $global:LASTEXITCODE = 1
-                        break
-                    }
+            # Compile
+            $global:LASTEXITCODE = 0
+            $p = Start-Process @processArgs
+            $stdout = Get-Content $stdoutFile
+            $stdout | Write-Host
+            $stderr = Get-Content $stderrFile
+            foreach ($line in $stdout) {
+                if ($line -match $MOD[$MOD_NAME]['compiler'][$OS]['error_regex']) {
+                    $global:LASTEXITCODE = 1
+                    break
                 }
-
-                # Cleanup
-                Remove-Item $tempDir -Recurse -Force
-            }else {
-                $p = Start-Process @processArgs
-                $global:LASTEXITCODE = $p.ExitCode
             }
+
+            # Cleanup
+            Remove-Item $tempDir -Recurse -Force
+
             if ($PSBoundParameters['SkipWrapper']) { "End of compilation." | Write-Host -ForegroundColor Yellow }
 
             # Get all items in compiled directory after compilation by hash
