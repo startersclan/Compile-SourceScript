@@ -32,7 +32,7 @@ $cmd = "Compile-SourceScript"
 # SourceMod #
 #############
 
-"`n[sourcemod] Compile plugin via wrapper" | Write-Host
+"`n[sourcemod] Compile plugin via wrapper, good plugin" | Write-Host
 $cmdArgs = @{
     File = "$PSScriptRoot\..\..\mod\sourcemod\addons\sourcemod\scripting\plugin1.sp"
     Force = $true
@@ -50,7 +50,7 @@ $iterations = 2
 $expectedExitCode = 1
 & $functionTestScriptBlock
 
-"`n[sourcemod] Compile plugin via compiler" | Write-Host
+"`n[sourcemod] Compile plugin via compiler, good plugin" | Write-Host
 $cmdArgs = @{
     File = "$PSScriptRoot\..\..\mod\sourcemod\addons\sourcemod\scripting\plugin2.sp"
     Force = $true
@@ -74,7 +74,7 @@ $expectedExitCode = 1
 # AMX Mod X #
 #############
 
-"`n[amxmodx] Compile plugin via wrapper" | Write-Host
+"`n[amxmodx] Compile plugin via wrapper, good plugin" | Write-Host
 # The following test should be run only for Windows, reason being that the non-Windows version:
 # - Does not take in arguments, instead compiles all plugins within the scripting directory
 # - Displays all the output using 'less' at the end of the compilation, thus is limited to interactive use
@@ -97,7 +97,7 @@ if ($env:OS -eq 'Windows_NT') {
     & $functionTestScriptBlock
 }else { "Skipping: Test only applicable to Windows." | Write-Host }
 
-"`n[amxmodx] Compile plugin via compiler" | Write-Host
+"`n[amxmodx] Compile plugin via compiler, good plugin" | Write-Host
 $cmdArgs = @{
     File = "$PSScriptRoot\..\..\mod\amxmodx\addons\amxmodx\scripting\plugin2.sma"
     Force = $true
