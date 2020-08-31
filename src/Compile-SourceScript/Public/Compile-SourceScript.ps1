@@ -153,35 +153,39 @@ function Compile-SourceScript {
                 PassThru = $true
             }
 
-            # Prepare compilation environment
-            if ($item = New-Item -Path $stdInFile -ItemType File -Force) {
-                # This dummy input bypasses the 'Press any key to continue' prompt of the compiler
-                '1' | Out-File -FilePath $item.FullName -Force -Encoding utf8
-            }
-            New-Item $tempDir -ItemType Directory -Force > $null
-            New-Item -Path $COMPILED_DIR -ItemType Directory -Force | Out-Null
-
-            # Begin compilation
-            "Compiling..." | Write-Host -ForegroundColor Cyan
-            if ($PSBoundParameters['SkipWrapper']) { "Compiling $($sourceFile.Name)..." | Write-Host -ForegroundColor Yellow }
-
-            # Compile
-            $global:LASTEXITCODE = 0
-            $p = Start-Process @processArgs
-            $stdout = Get-Content $stdoutFile
-            $stdout | Write-Host
-            $stderr = Get-Content $stderrFile
-            $stderr | Write-Host
-            foreach ($line in $stdout) {
-                if ($line -match $MOD[$MOD_NAME]['compiler'][$OS]['error_regex']) {
-                    $global:LASTEXITCODE = 1
-                    break
+            try {
+                # Prepare compilation environment
+                if ($item = New-Item -Path $stdInFile -ItemType File -Force) {
+                    # This dummy input bypasses the 'Press any key to continue' prompt of the compiler
+                    '1' | Out-File -FilePath $item.FullName -Force -Encoding utf8
                 }
-            }
+                New-Item $tempDir -ItemType Directory -Force > $null
+                New-Item -Path $COMPILED_DIR -ItemType Directory -Force | Out-Null
 
-            # Cleanup
-            Remove-Item $stdInFile -Force
-            Remove-Item $tempDir -Recurse -Force
+                # Begin compilation
+                "Compiling..." | Write-Host -ForegroundColor Cyan
+                if ($PSBoundParameters['SkipWrapper']) { "Compiling $($sourceFile.Name)..." | Write-Host -ForegroundColor Yellow }
+
+                # Compile
+                $global:LASTEXITCODE = 0
+                $p = Start-Process @processArgs
+                $stdout = Get-Content $stdoutFile
+                $stdout | Write-Host
+                $stderr = Get-Content $stderrFile
+                $stderr | Write-Host
+                foreach ($line in $stdout) {
+                    if ($line -match $MOD[$MOD_NAME]['compiler'][$OS]['error_regex']) {
+                        $global:LASTEXITCODE = 1
+                        break
+                    }
+                }
+            }catch {
+                throw
+            }finally {
+                # Cleanup
+                Remove-Item $stdInFile -Force
+                Remove-Item $tempDir -Recurse -Force
+            }
 
             if ($PSBoundParameters['SkipWrapper']) { "End of compilation." | Write-Host -ForegroundColor Yellow }
 
