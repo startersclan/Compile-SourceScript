@@ -171,6 +171,7 @@ function Compile-SourceScript {
             $stdout = Get-Content $stdoutFile
             $stdout | Write-Host
             $stderr = Get-Content $stderrFile
+            $stderr | Write-Host
             foreach ($line in $stdout) {
                 if ($line -match $MOD[$MOD_NAME]['compiler'][$OS]['error_regex']) {
                     $global:LASTEXITCODE = 1
