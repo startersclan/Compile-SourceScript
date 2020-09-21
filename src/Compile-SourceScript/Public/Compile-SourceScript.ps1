@@ -61,6 +61,9 @@ function Compile-SourceScript {
 
             # Initialize variables
             $MOD = @{
+                # The sourcemod compiler returns exits code correctly.
+                # The sourcemod compiler wrapper returns the exit code of the lastmost executed shell statement. This is particularly bad when the compiler exits with '0' from a successful finalmost shell statement, even when one or more prior shell statements exited with non-zero exit codes.
+                # Hence, knowing that exit codes are not a reliable way to determine whether one or more compilation statements failed, we are going to use a regex on the stdout as a more reliable way to detect compilation errors, regardless of whether compilation was performed via the compiler binary or via the compiler wrapper.
                 sourcemod = @{
                     script_ext = '.sp'
                     plugin_ext = '.smx'
@@ -70,13 +73,18 @@ function Compile-SourceScript {
                         windows = @{
                             wrapper = 'compile.exe'
                             bin = 'spcomp.exe'
+                            error_regex = '^Compilation aborted|^\d+\s+Errors?|.*\.sp\(\d+\)\s*:\s*(?:fatal)? error (\d+)'
                         }
                         others = @{
                             wrapper = 'compile.sh'
                             bin = 'spcomp'
+                            error_regex = '^Compilation aborted|^\d+\s+Errors?|.*\.sp\(\d+\)\s*:\s*(?:fatal)? error (\d+)'
                         }
                     }
                 }
+                # The amxmodx compiler binary always exits with exit code 0.
+                # The amxmodx compiler wrapper always exits with exit code 0.
+                # Hence, knowing that exit codes are not a reliable way to determine whether one or more compilation statements failed, we are going to use a regex on the stdout as a more reliable way to detect compilation errors, regardless of whether compilation was performed via the compiler binary or via the compiler wrapper.
                 amxmodx = @{
                     script_ext = '.sma'
                     plugin_ext = '.amxx'
@@ -86,21 +94,18 @@ function Compile-SourceScript {
                         windows = @{
                             wrapper = 'compile.exe'
                             bin = 'amxxpc.exe'
+                            error_regex = '^\d+\s+Errors?|compile failed|^.*\.sma\(\d+\)\s*:\s*error (\d+)'
                         }
                         others = @{
                             wrapper = 'compile.sh'
                             bin = 'amxxpc'
+                            error_regex = '^\d+\s+Errors?|compile failed|^.*\.sma\(\d+\)\s*:\s*error (\d+)'
                         }
                     }
                 }
             }
-            $COMPILER_NAME = if ($env:OS -eq 'Windows_NT') {
-                if ($PSBoundParameters['SkipWrapper']) { $MOD[$MOD_NAME]['compiler']['windows']['bin'] }
-                else { $MOD[$MOD_NAME]['compiler']['windows']['wrapper'] }
-            }else {
-                if ($PSBoundParameters['SkipWrapper']) { $MOD[$MOD_NAME]['compiler']['others']['bin'] }
-                else { $MOD[$MOD_NAME]['compiler']['others']['wrapper'] }
-            }
+            $OS = if ($env:OS -eq 'Windows_NT') { 'windows' } else { 'others' }
+            $COMPILER_NAME = if ($PSBoundParameters['SkipWrapper']) { $MOD[$MOD_NAME]['compiler'][$OS]['bin'] } else { $MOD[$MOD_NAME]['compiler'][$OS]['wrapper'] }
             $SCRIPTING_DIR = $sourceFile.DirectoryName
             $COMPILED_DIR = Join-Path $SCRIPTING_DIR $MOD[$MOD_NAME]['compiled_dir_name']
             $COMPILER_PATH = Join-Path $SCRIPTING_DIR $COMPILER_NAME
@@ -123,33 +128,65 @@ function Compile-SourceScript {
             # Get all items in compiled directory before compilation by hash
             $compiledDirItemsPre = Get-ChildItem -Path $COMPILED_DIR -File -Recurse -Force | ? { $_.Extension -eq $MOD[$MOD_NAME]['plugin_ext'] } | Select-Object *, @{name='md5'; expression={(Get-FileHash -Path $_.Fullname -Algorithm MD5).Hash}}
 
-            # Prepare for compilation
-            "Compiling..." | Write-Host -ForegroundColor Cyan
+            # Generate command line arguments
             $epoch = [Math]::Floor([decimal](Get-Date(Get-Date).ToUniversalTime()-uformat "%s"))
-            $stdInFile = New-Item -Path (Join-Path $SCRIPTING_DIR ".$epoch") -ItemType File -Force
-            '1' | Out-File -FilePath $stdInFile.FullName -Force -Encoding utf8
+            $stdInFile = Join-Path $SCRIPTING_DIR ".$epoch"
+            $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) (New-Guid).Guid
+            $stdoutFile = Join-Path $tempDir 'stdout'
+            $stderrFile = Join-Path $tempDir 'stderr'
             $processArgs = @{
                 FilePath = $compiler.FullName
+                ArgumentList = @(
+                    if ($PSBoundParameters['SkipWrapper']) {
+                        $sourceFile.Name
+                        "-o$($MOD[$MOD_NAME]['compiled_dir_name'])/$($sourceFile.Basename)$($MOD[$MOD_NAME]['plugin_ext'])"
+                    }else {
+                        $sourceFile.Name
+                    }
+                )
                 WorkingDirectory = $SCRIPTING_DIR
-                RedirectStandardInput = $stdInFile.FullName
+                RedirectStandardInput = $stdInFile
+                RedirectStandardOutput = $stdoutFile
+                RedirectStandardError = $stderrFile
                 Wait = $true
                 NoNewWindow = $true
+                PassThru = $true
             }
-            if ($PSBoundParameters['SkipWrapper']) {
-                $processArgs['ArgumentList'] = @(
-                    $sourceFile.Name
-                    "-o$($MOD[$MOD_NAME]['compiled_dir_name'])/$($sourceFile.Basename)$($MOD[$MOD_NAME]['plugin_ext'])"
-                )
-            }else {
-                $processArgs['ArgumentList'] = @(
-                    $sourceFile.Name
-                )
-            }
-            New-Item -Path $COMPILED_DIR -ItemType Directory -Force | Out-Null
 
-            # Begin compilation
-            if ($PSBoundParameters['SkipWrapper']) { "Compiling $($sourceFile.Name)..." | Write-Host -ForegroundColor Yellow }
-            Start-Process @processArgs
+            try {
+                # Prepare compilation environment
+                if ($item = New-Item -Path $stdInFile -ItemType File -Force) {
+                    # This dummy input bypasses the 'Press any key to continue' prompt of the compiler
+                    '1' | Out-File -FilePath $item.FullName -Force -Encoding utf8
+                }
+                New-Item $tempDir -ItemType Directory -Force > $null
+                New-Item -Path $COMPILED_DIR -ItemType Directory -Force | Out-Null
+
+                # Begin compilation
+                "Compiling..." | Write-Host -ForegroundColor Cyan
+                if ($PSBoundParameters['SkipWrapper']) { "Compiling $($sourceFile.Name)..." | Write-Host -ForegroundColor Yellow }
+
+                # Compile
+                $global:LASTEXITCODE = 0
+                $p = Start-Process @processArgs
+                $stdout = Get-Content $stdoutFile
+                $stdout | Write-Host
+                $stderr = Get-Content $stderrFile
+                $stderr | Write-Host
+                foreach ($line in $stdout) {
+                    if ($line -match $MOD[$MOD_NAME]['compiler'][$OS]['error_regex']) {
+                        $global:LASTEXITCODE = 1
+                        break
+                    }
+                }
+            }catch {
+                throw
+            }finally {
+                # Cleanup
+                Remove-Item $stdInFile -Force
+                Remove-Item $tempDir -Recurse -Force
+            }
+
             if ($PSBoundParameters['SkipWrapper']) { "End of compilation." | Write-Host -ForegroundColor Yellow }
 
             # Get all items in compiled directory after compilation by hash
@@ -231,10 +268,6 @@ function Compile-SourceScript {
         }catch {
             Write-Error -Exception $_.Exception -Message $_.Exception.Message -Category $_.CategoryInfo.Category -TargetObject $_.TargetObject
         }finally {
-            # Cleanup
-            if ($stdInFile) {
-                Remove-Item -Path $stdInFile -Force
-            }
             "End of Compile-SourceScript." | Write-Host -ForegroundColor Cyan
         }
     }
