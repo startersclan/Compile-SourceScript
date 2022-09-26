@@ -1,4 +1,4 @@
-#!/bin/bash -eu
+#!/bin/sh -eu
 
 echo 'Installing lib32stdc++6'
 if ! dpkg -l lib32stdc++6; then
