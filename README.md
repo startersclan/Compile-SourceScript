@@ -70,6 +70,25 @@ Compile-SourceScript -File ~/servers/cstrike/addons/amxmodx/scripting/plugin2.sm
 
 Sample tasks files can be found [here](docs/samples/.vscode).
 
+## FAQ
+
+### Common issues
+
+- `bash: /path/to/scripting/amxxpc: No such file or directory`
+
+    Install [dependencies](test/scripts/dep/linux/sourcepawn-dependencies.sh) for the compiler.
+
+- `compiler failed to instantiate: amxxpc32.so: cannot open shared object file: No such file or directory`
+
+    Invoke the compiler from within the directory where the compiler is located.
+
+    ```sh
+    cd /path/to/scripting
+    ./amxxpc
+    ```
+
+    See [here](https://forums.alliedmods.net/showthread.php?p=154320) for more details.
+
 ## Administration
 
 ### Versions
@@ -156,22 +175,3 @@ To list all installed versions of the module available for import:
 ```powershell
 Get-Module -Name Compile-SourceScript -ListAvailable -Verbose
 ```
-
-## FAQ
-
-### Common issues
-
-- `bash: /path/to/scripting/amxxpc: No such file or directory`
-
-    Install [dependencies](test/scripts/dep/linux/sourcepawn-dependencies.sh) for the compiler.
-
-- `compiler failed to instantiate: amxxpc32.so: cannot open shared object file: No such file or directory`
-
-    Invoke the compiler from within the directory where the compiler is located.
-
-    ```sh
-    cd /path/to/scripting
-    ./amxxpc
-    ```
-
-    See [here](https://forums.alliedmods.net/showthread.php?p=154320) for more details.
