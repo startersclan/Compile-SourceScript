@@ -50,7 +50,7 @@ Compile-SourceScript [-File] <String> [-SkipWrapper] [-Force] [<CommonParameters
 
 #### Example 1
 
-Compiles the *SourceMod* plugin source file `plugin1.sp`, and installs the compiled plugin with user confirmation for the game *Counter-Strike: Global Offensive*.
+Compiles the *SourceMod* plugin source file `plugin1.sp`, and installs the compiled plugin *with* user confirmation for the game *Counter-Strike: Global Offensive*.
 
 ```powershell
 Compile-SourceScript -File ~/servers/csgo/addons/sourcemod/scripting/plugin1.sp
