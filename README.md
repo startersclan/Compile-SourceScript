@@ -85,11 +85,11 @@ Sample tasks files can be found [here](docs/samples/.vscode).
 
 ### Compiler errors
 
-* `bash: /path/to/scripting/amxxpc: No such file or directory`
+- `bash: /path/to/scripting/amxxpc: No such file or directory`
 
     Install [dependencies](test/scripts/dep/linux/sourcepawn-dependencies.sh) for the compiler.
 
-* `compiler failed to instantiate: amxxpc32.so: cannot open shared object file: No such file or directory`
+- `compiler failed to instantiate: amxxpc32.so: cannot open shared object file: No such file or directory`
 
     Invoke the compiler from within the directory where the compiler is located:
 
