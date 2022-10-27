@@ -64,7 +64,7 @@ Compile-SourceScript [-File] <String> [-SkipWrapper] [-Force] [<CommonParameters
 Compiles the *SourceMod* plugin source file `plugin1.sp`, and installs the compiled plugin *with* user confirmation for the game *Counter-Strike: Global Offensive*.
 
 ```powershell
-Compile-SourceScript -File ~/servers/csgo/addons/sourcemod/scripting/plugin1.sp
+Compile-SourceScript -File ~/server/csgo/addons/sourcemod/scripting/plugin1.sp
 ```
 
 #### Example 2
@@ -72,7 +72,7 @@ Compile-SourceScript -File ~/servers/csgo/addons/sourcemod/scripting/plugin1.sp
 Compiles the *AMX Mod X* plugin source file `plugin2.sma` *without* using the mod's compiler wrapper, and installs the compiled plugin *without* user confirmation for the game *Counter-Strike 1.6*.
 
 ```powershell
-Compile-SourceScript -File ~/servers/cstrike/addons/amxmodx/scripting/plugin2.sma -SkipWrapper -Force
+Compile-SourceScript -File ~/server/cstrike/addons/amxmodx/scripting/plugin2.sma -SkipWrapper -Force
 ```
 
 ### VSCode
