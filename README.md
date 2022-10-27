@@ -21,24 +21,35 @@ A PowerShell module for compiling [**SourceMod**](https://www.sourcemod.net/) ([
 
 ## Installation
 
-First, ensure [`PSGallery`](https://www.powershellgallery.com/) is registered as a PowerShell repository:
+The module can be [*installed*](#via-install), or [*imported*](#via-import) from a local copy of this git repository.
+
+### via Install
 
 ```powershell
-Register-PSRepository -Default -Verbose
-```
-
-To install the module:
-
-```powershell
-# Latest, for the current user
+# Latest version
 Install-Module -Name Compile-SourceScript -Repository PSGallery -Scope CurrentUser -Verbose
 
-# Specific version, for the current user
+# Or, for specific version
 Install-Module -Name Compile-SourceScript -Repository PSGallery -RequiredVersion x.x.x -Scope CurrentUser -Verbose
-
-# Latest, for all users
-Install-Module -Name Compile-SourceScript -Repository PSGallery -Scope AllUsers -Verbose
 ```
+
+If prompted to trust the repository, type `Y` and `enter`.
+
+### via Import
+
+```powershell
+# Clone the git repository
+git clone https://github.com/startersclan/Compile-SourceScript.git
+cd Compile-SourceScript/
+
+# Checkout version to use
+git checkout vx.x.x
+
+# Import the module
+Import-Module ./src/Compile-SourceScript/Compile-SourceScript.psm1 -Force -Verbose
+```
+
+The module is now ready for use.
 
 ## Usage
 
@@ -66,7 +77,7 @@ Compile-SourceScript -File ~/servers/cstrike/addons/amxmodx/scripting/plugin2.sm
 
 ### VSCode
 
-`Compile-SourceScript` can be invoked via [Build Tasks](https://code.visualstudio.com/docs/editor/tasks#vscode) in **VSCode**.
+`Compile-SourceScript` can be invoked via [*Build Tasks*](https://code.visualstudio.com/docs/editor/tasks) in [VSCode](https://code.visualstudio.com/).
 
 Sample tasks files can be found [here](docs/samples/.vscode).
 
