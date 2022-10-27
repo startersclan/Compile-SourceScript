@@ -21,7 +21,7 @@ A PowerShell module for compiling [**SourceMod**](https://www.sourcemod.net/) ([
 
 ## Installation
 
-The module can be [*installed*](#via-install), or [*imported*](#via-import) from a local copy of this git repository.
+The module can either be [*installed*](#via-install), or [*imported*](#via-import) from a local copy of this git repository.
 
 ### via Install
 
