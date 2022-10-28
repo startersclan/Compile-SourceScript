@@ -11,13 +11,13 @@ $functionTestScriptBlock = {
         "Command: $script:cmd" | Write-Verbose
         "Args:" | Write-Verbose
         $script:cmdArgs | Out-String -Stream | % { $_.Trim() } | ? { $_ } | Write-Verbose
-        for ($i=0; $i -le $iterations-1; $i++) {
+        for ($i=0; $i -le $script:iterations-1; $i++) {
             "Iteration: $($i+1)" | Write-Host
-            & $script:cmd @cmdArgs
-            if ($global:LASTEXITCODE -ne $expectedExitCode) {
-                throw "Expected exit code $expectedExitCode but got exit code $global:LASTEXITCODE"
+            & $script:cmd @script:cmdArgs
+            if ($global:LASTEXITCODE -ne $script:expectedExitCode) {
+                throw "Expected exit code $script:expectedExitCode but got exit code $global:LASTEXITCODE"
             }
-            "Expected exit code: $expectedExitCode, Exit code: $global:LASTEXITCODE" | Write-Host -ForegroundColor Yellow
+            "Expected exit code: $script:expectedExitCode, Exit code: $global:LASTEXITCODE" | Write-Host -ForegroundColor Yellow
         }
     }catch {
         $_ | Write-Error
