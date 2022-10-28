@@ -14,10 +14,10 @@ $functionTestScriptBlock = {
         for ($i=0; $i -le $script:iterations-1; $i++) {
             "Iteration: $($i+1)" | Write-Host
             & $script:cmd @script:cmdArgs
-            if ($global:LASTEXITCODE -ne $script:expectedExitCode) {
-                throw "Expected exit code $script:expectedExitCode but got exit code $global:LASTEXITCODE"
+            if ($LASTEXITCODE -ne $script:expectedExitCode) {
+                throw "Expected exit code $script:expectedExitCode but got exit code $LASTEXITCODE"
             }
-            "Expected exit code: $script:expectedExitCode, Exit code: $global:LASTEXITCODE" | Write-Host -ForegroundColor Yellow
+            "Expected exit code: $script:expectedExitCode, Exit code: $LASTEXITCODE" | Write-Host -ForegroundColor Yellow
         }
     }catch {
         $_ | Write-Error
