@@ -42,10 +42,16 @@ stages:
       vmImage: ubuntu-22.04
     strategy:
       matrix:
+        7.4.2:
+          containerImage: joeltimothyoh/powershell:7.4.2-ubuntu-22.04-git-sudo
         7.3.9:
           containerImage: joeltimothyoh/powershell:7.3.9-ubuntu-22.04-git-sudo
         7.2.2:
-          containerImage: joeltimothyoh/powershell:7.2.2-ubuntu-18.04-git-sudo
+          containerImage: joeltimothyoh/powershell:7.2.2-ubuntu-20.04-git-sudo
+        7.1.5:
+          containerImage: joeltimothyoh/powershell:7.1.5-ubuntu-20.04-git-sudo
+        7.0.3:
+          containerImage: joeltimothyoh/powershell:7.0.3-ubuntu-18.04-git-sudo
         6.2.0:
           containerImage: joeltimothyoh/powershell:6.2.0-ubuntu-18.04-git-sudo
         6.1.0:
