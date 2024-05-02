@@ -28,7 +28,7 @@ stages:
 - stage: build_test
   displayName: Build, Test
   jobs:
-  - job: windows_pwsh
+  - job: windows_powershell_core
     displayName: '[Windows] PowerShell Core'
     pool:
       vmImage: windows-2022
@@ -36,7 +36,7 @@ stages:
     - checkout: self
       submodules: recursive
     - template: templates/azure-pipelines/entrypoint/windows/build-test.yml@PSModulePublisher
-  - job: linux_container
+  - job: linux_container_powershell_core
     displayName: '[Linux] [Container] PowerShell'
     pool:
       vmImage: ubuntu-22.04
@@ -67,7 +67,7 @@ stages:
   displayName: Build, Publish
   dependsOn: build_test
   jobs:
-  - job: windows_pwsh
+  - job: windows_powershell_core
     displayName: '[Windows] PowerShell Core'
     pool:
       vmImage: windows-2022
@@ -79,7 +79,7 @@ stages:
   displayName: Release
   dependsOn: build_publish
   jobs:
-  - job: linux_container
+  - job: linux_container_powershell_core
     displayName: '[Linux] [Container] PowerShell Core'
     pool:
       vmImage: ubuntu-22.04
