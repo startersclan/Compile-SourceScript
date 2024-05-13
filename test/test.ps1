@@ -1,46 +1,102 @@
 [CmdletBinding()]
-param()
+param (
+    [Parameter(Mandatory=$false)]
+    [ValidateNotNullOrEmpty()]
+    [string]$Tag = ''
+)
 
 Set-StrictMode -Version Latest
 $VerbosePreference = 'Continue'
-$global:PesterDebugPreference_ShowFullErrors = $true
+$script:PesterDebugPreference_ShowFullErrors = $true
 
 try {
+    # Initialize variables
+    $moduleItem = Get-Item "$PSScriptRoot/../src/*/*.psm1"
+    $MODULE_PATH = $moduleItem.FullName
+    $MODULE_DIR = $moduleItem.Directory
+    $MODULE_NAME = $moduleItem.BaseName
+
     Push-Location $PSScriptRoot
 
-    # Install test dependencies
-    "Installing test dependencies" | Write-Host
-    & "$PSScriptRoot\scripts\dep\Install-TestDependencies.ps1" > $null
+    # Install Pester if needed
+    "Checking Pester version" | Write-Host
+    $pesterMinimumVersion = [version]'4.0.0'
+    $pesterMaximumVersion = [version]'4.10.1'
+    $pester = Get-Module 'Pester' -ListAvailable -ErrorAction SilentlyContinue
+    if (!$pester -or !($pester | ? { $_.Version -ge $pesterMinimumVersion -and $_.Version -le $pesterMaximumVersion })) {
+        "Installing Pester" | Write-Host
+        Install-Module -Name 'Pester' -Repository 'PSGallery' -MinimumVersion $pesterMinimumVersion -MaximumVersion $pesterMaximumVersion -Scope CurrentUser -Force
+    }
+    $pester = Get-Module Pester -ListAvailable
+    $pester | Out-String | Write-Verbose
+    $pester | ? { $_.Version -ge $pesterMinimumVersion -and $_.Version -le $pesterMaximumVersion } | Select-Object -First 1 | Import-Module # Force import the latest version within the defined range to ensure environment uses the correct version of Pester
+
+    # Install linux dependencies
+    if ($env:OS -ne 'Windows_NT') {
+        if ($IsLinux) {
+            "Installing dependencies for linux" | Write-Host
+
+            # Provisioning script block
+            $provisionScriptBlock = {
+                $sudo = sh -c 'command -v sudo'
+                $shellBin = sh -c 'command -v bash || command -v sh'
+                $sudo | Write-Host
+                $shellBin | Write-Host
+                "Shell command:" | Write-Verbose
+                $script:shellArgs | Write-Verbose
+                if ($sudo) {
+                    'Executing command with sudo' | Write-Host
+                    & $sudo $shellBin @script:shellArgs | Write-Host
+                }else {
+                    & $shellBin @script:shellArgs | Write-Host
+                }
+                if ($LASTEXITCODE) { throw "An error occurred." }
+            }
+
+            $shellArgs = @(
+                'scripts/dep/linux/sourcepawn-dependencies.sh'
+            )
+            & $provisionScriptBlock
+        }
+    }
 
     # Import the project module
-    Import-Module "../src/Compile-SourceScript/Compile-SourceScript.psm1" -Force
+    Import-Module $MODULE_PATH -Force
 
-    # Run unit tests
-    "Running unit tests" | Write-Host
-    $testFailed = $false
-    $unitResult = Invoke-Pester -Script "$PSScriptRoot\..\src\Compile-SourceScript" -Tag 'Unit' -PassThru
-    if ($unitResult.FailedCount -gt 0) {
-        "$($unitResult.FailedCount) tests failed." | Write-Warning
-        $testFailed = $true
+    if ($Tag) {
+        # Run Unit Tests
+        $res = Invoke-Pester -Script $MODULE_DIR -Tag $Tag -PassThru -ErrorAction Stop
+        if (!($res.PassedCount -eq $res.TotalCount)) {
+            "$($res.TotalCount - $res.PassedCount) unit tests did not pass." | Write-Host
+        }
+        if (!($res.PassedCount -eq $res.TotalCount)) {
+            throw
+        }
+    }else {
+        # Run Unit Tests
+        $res = Invoke-Pester -Script $MODULE_DIR -Tag 'Unit' -PassThru -ErrorAction Stop
+        if (!($res.PassedCount -eq $res.TotalCount)) {
+            "$($res.TotalCount - $res.PassedCount) integration tests did not pass." | Write-Host
+        }
+
+        # Run Integration Tests
+        $res2 = Invoke-Pester -Script $MODULE_DIR -Tag 'Integration' -PassThru -ErrorAction Stop
+        if (!($res2.PassedCount -eq $res2.TotalCount)) {
+            "$($res2.TotalCount - $res2.PassedCount) integration tests did not pass." | Write-Host
+        }
+
+        if (!($res.PassedCount -eq $res.TotalCount) -or !($res2.PassedCount -eq $res2.TotalCount)) {
+            throw
+        }
     }
 
-    # Run integration tests
-    "Running integration tests" | Write-Host
-    $integratedFailedCount = Invoke-Pester -Script "$PSScriptRoot\..\src\Compile-SourceScript" -Tag 'Integration' -PassThru
-    if ($integratedFailedCount.FailedCount -gt 0) {
-        "$($integratedFailedCount.FailedCount) tests failed." | Write-Warning
-        $testFailed = $true
-    }
-
-    "Listing test artifacts" | Write-Host
-    git ls-files --others --exclude-standard
-
-    "End of tests" | Write-Host
-    if ($testFailed) {
-        throw "One or more tests failed."
-    }
 }catch {
     throw
 }finally {
+    "Listing test artifacts" | Write-Host
+    Push-Location "$(git rev-parse --show-toplevel)"
+    git ls-files --others --exclude-standard
+    Pop-Location
+
     Pop-Location
 }
