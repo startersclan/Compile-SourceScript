@@ -12,10 +12,13 @@ try {
     "Installing test dependencies" | Write-Host
     & "$PSScriptRoot\scripts\dep\Install-TestDependencies.ps1" > $null
 
+    # Import the project module
+    Import-Module "../src/Compile-SourceScript/Compile-SourceScript.psm1" -Force
+
     # Run unit tests
     "Running unit tests" | Write-Host
     $testFailed = $false
-    $unitResult = Invoke-Pester -Script "$PSScriptRoot\..\src\Compile-SourceScript" -PassThru
+    $unitResult = Invoke-Pester -Script "$PSScriptRoot\..\src\Compile-SourceScript" -Tag 'Unit' -PassThru
     if ($unitResult.FailedCount -gt 0) {
         "$($unitResult.FailedCount) tests failed." | Write-Warning
         $testFailed = $true
@@ -23,8 +26,9 @@ try {
 
     # Run integration tests
     "Running integration tests" | Write-Host
-    $integratedFailedCount = & "$PSScriptRoot\scripts\integration\Run-IntegrationTests.ps1"
-    if ($integratedFailedCount -gt 0) {
+    $integratedFailedCount = Invoke-Pester -Script "$PSScriptRoot\..\src\Compile-SourceScript" -Tag 'Integration' -PassThru
+    if ($integratedFailedCount.FailedCount -gt 0) {
+        "$($integratedFailedCount.FailedCount) tests failed." | Write-Warning
         $testFailed = $true
     }
 
