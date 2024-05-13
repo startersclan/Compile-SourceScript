@@ -1,16 +1,11 @@
 Set-StrictMode -Version Latest
 
-##################
-# Module globals #
-##################
+# Initialize variables
+$MODULE_BASE_DIR = $PSScriptRoot
+$MODULE_PUBLIC_DIR = Join-Path $MODULE_BASE_DIR 'Public'
 
-# Module constants
-$script:MODULE = @{}
-$script:MODULE['BASE_DIR'] = $PSScriptRoot
-$script:MODULE['PUBLIC_DIR'] = Join-Path $script:MODULE['BASE_DIR'] 'Public'          # Module public functions
+# Load functions
+Get-ChildItem "$MODULE_PUBLIC_DIR\*.ps1" -exclude *.Tests.ps1 | % { . $_.FullName }
 
-# Load vendor, Public, Private, classes, helpers
-Get-ChildItem -Path "$($script:MODULE['PUBLIC_DIR'])\*.ps1" | % { . $_.FullName }
-
-# Export Public functions
-Export-ModuleMember -Function (Get-ChildItem "$($script:MODULE['PUBLIC_DIR'])\*.ps1" | Select-Object -ExpandProperty BaseName)
+# Export functions
+Export-ModuleMember -Function (Get-ChildItem "$MODULE_PUBLIC_DIR\*.ps1" | Select-Object -ExpandProperty BaseName)
