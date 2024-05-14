@@ -1,7 +1,5 @@
 Describe "Compile-SourceScript" -Tag 'Integration' {
     BeforeAll {
-        $ErrorActionPreference = 'Continue'
-        $VerbosePreference = 'Continue'
     }
     BeforeEach {
     }
