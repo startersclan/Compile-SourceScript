@@ -1,5 +1,6 @@
 Describe "Compile-SourceScript" -Tag 'Integration' {
     BeforeAll {
+        $ErrorView = 'NormalView'
     }
     BeforeEach {
     }
