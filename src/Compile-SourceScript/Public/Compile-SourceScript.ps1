@@ -164,7 +164,7 @@ function Compile-SourceScript {
 
                 # Begin compilation
                 "Compiling..." | Write-Host -ForegroundColor Cyan
-                if ($PSBoundParameters['SkipWrapper']) { "Compiling $($sourceFile.Name)..." | Write-Host -ForegroundColor Yellow }
+                "Command: $($processArgs['FilePath']) $($processArgs['ArgumentList'])" | Write-Host -ForegroundColor Yellow
 
                 # Compile
                 $global:LASTEXITCODE = 0
